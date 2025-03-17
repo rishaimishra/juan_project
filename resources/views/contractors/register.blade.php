@@ -333,7 +333,6 @@
     </section>
 
 
-@section('scripts')
     <x-script-component />
 
     <script type="text/javascript">

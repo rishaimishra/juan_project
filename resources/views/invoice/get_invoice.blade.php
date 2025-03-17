@@ -48,6 +48,7 @@
                                         <td>{{ $opp->status }}</td>
                                         <td>{{ $opp->amount }}</td>
                                         <td>{{ $opp->created_at }}</td>
+                                        @if ($opp->status == "paid")
                                         <td>
                                             <a href="{{ asset($opp->invoice_path) }}" download>
                                                 <svg style="width:30px;" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -58,6 +59,7 @@
                                                 </svg>
                                             </a>
                                         </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>

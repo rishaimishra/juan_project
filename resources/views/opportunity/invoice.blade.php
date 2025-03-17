@@ -86,10 +86,10 @@
         <tr>
             <td style="background: none !important;">
                 <div>
-                    <strong>64.6 Energy Efficiency S.L.</strong><br>
-                    Rua Camouco, nº 2, Portal 2, Ático J<br>
-                    Ribeira - A Coruña<br>
-                    15960 - SPAIN
+                    <strong>{{ __('lang.addr_one') }}</strong><br>
+                    {{ __('lang.addr_two') }}<br>
+                    {{ __('lang.addr_three') }}<br>
+                    {{ __('lang.addr_four') }}
                 </div>
             </td>
             <td style="background: none !important;">
@@ -108,13 +108,13 @@
         <div>
             <table>
                 <tr>
-                    <th>Documento</th>
-                    <th>Número</th>
-                    <th>Fecha</th>
+                    <th>{{ __('lang.document') }}</th>
+                    <th>{{ __('lang.inv_number') }}</th>
+                    <th>{{ __('lang.inv_Date') }}</th>
                 </tr>
                 <tr>
-                    <td>Factura</td>
-                    <td>43</td>
+                    <td>{{ __('lang.inv_Factura') }}</td>
+                    <td>{{$invoice_id}}</td>
                     <td>{{ $date }}</td>
                 </tr>
             </table>
@@ -123,11 +123,11 @@
             <table>
                 <tr>
                     <th>N.I.F</th>
-                    <th>Forma de pago</th>
+                    <th>{{ __('lang.inv_pay_method') }}  </th>
                 </tr>
                 <tr>
                     <td>B70515507</td>
-                    <td>Transferencia</td>
+                    <td>{{ __('lang.inv_bank_transfer') }}</td>
                 </tr>
             </table>
         </div>
@@ -135,19 +135,20 @@
     <table>
         <thead>
             <tr>
-                <th>Artículo</th>
-                <th>Descripción</th>
-                <th>Cantidad</th>
-                <th>Precio Ud.</th>
-                <th>Subtotal</th>
-                <th>Descuento</th>
-                <th>Total</th>
+                <th>{{ __('lang.inv_item') }}</th>
+                <th>{{ __('lang.inv_desc') }}</th>
+                <th>{{ __('lang.inv_quantity') }}</th>
+                <th>{{ __('lang.inv_unit') }}</th>
+                <th>{{ __('lang.inv_subtotal') }}</th>
+                <th>{{ __('lang.inv_discount') }}</th>
+                <th>{{ __('lang.inv_total') }}</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>1.</td>
-                <td>Pago tarifa de Información</td>
+                {{-- <td>Pago tarifa de Información</td> --}}
+                <td>{{ __('lang.inv_payment_info') }}</td>
                 <td>1</td>
                 <td>{{ $subtotal }} {{ $country_code }}</td>
                 <td>{{ $subtotal }} {{ $country_code }}</td>
@@ -178,7 +179,7 @@
 
         <table class="summary-table">
             <tr>
-                <th>Total:</th>
+                <th>{{ __('lang.inv_total') }}:</th>
                 <td>{{ $total }} {{ $country_code }}</td>
             </tr>
             <tr>
@@ -188,18 +189,22 @@
     @else
         <table class="summary-table">
             <tr>
-                <th>Total:</th>
-                <td>{{ $subtotal }} {{ $country_code }}</td>
+                <th>{{ __('lang.inv_total') }}:</th>
+                <td> {{ $subtotal }} EUR</td>
             </tr>
         </table>
     @endif
     <table>
         <tr>
             <td>
-                <p>64.6 Energy Efficiency SL empresa registrada en Registro Mercantil de Santiago de Compostela Tomo 303 Libro 0 Folio 67 Hoja SC-48855 Inscrip 1.</p>
+            <!-- <p>64.6 Energy Efficiency SL empresa registrada en Registro Mercantil de Santiago de Compostela Tomo 303 Libro 0 Folio 67 Hoja SC-48855 Inscrip 1.</p> -->
+
             </td>
         </tr>
     </table>
+
+    <p style="margin-top: 50%">64.6 Energy Efficiency SL empresa registrada en Registro Mercantil de Santiago de Compostela Tomo 303 Libro 0 Folio 67 Hoja SC-48855 Inscrip 1.</p>
+
 </body>
 
 </html>

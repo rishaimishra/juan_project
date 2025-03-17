@@ -2338,18 +2338,18 @@
 </script>
 
 <script>
-    document.getElementById('geo_area_change').addEventListener('change', function() {
-        const value = this.value;
+    // document.getElementById('geo_area_change').addEventListener('change', function() {
+    //     const value = this.value;
 
-        // Close any open modals first
-        $('#nationalModal').modal('hide');
-        $('#stateModal').modal('hide');
+    //     // Close any open modals first
+    //     $('#nationalModal').modal('hide');
+    //     $('#stateModal').modal('hide');
 
-        // Open the appropriate modal based on the selection
-        if (value === '1') {
-            $('#nationalModal').modal('show');
-        } else if (value === '2') {
-            $('#stateModal').modal('show');
-        }
-    });
+    //     // Open the appropriate modal based on the selection
+    //     if (value === '1') {
+    //         $('#nationalModal').modal('show');
+    //     } else if (value === '2') {
+    //         $('#stateModal').modal('show');
+    //     }
+    // });
 </script>

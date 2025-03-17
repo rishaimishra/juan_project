@@ -240,7 +240,7 @@
     border-radius: 5px;
   }
   .contact_us .base_btn {
-    background-color: #0772b1;
+    background-color: #0772b1 !important;
     border-radius: 5px !important;
     color: #ffffff;
     min-width: 170px;

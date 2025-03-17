@@ -256,9 +256,21 @@
                                 <div class="form-group">
                                     <label
                                         class="col-form-label input_color fz16 pt-3">{{ __('lang.text_descripcion') }}</label>
-                                    <input readonly class="form-control pl-4 pr-4 input_bg border_radius custom_input"
-                                        value={{ $opportunity->detail_description }} name="description" type="text"
-                                        placeholder="Enter Description" />
+                                    <!-- <input readonly class="form-control pl-4 pr-4 input_bg border_radius custom_input"
+                                        value="{{ $opportunity->detail_description }}" name="description" type="text"
+                                        placeholder="Enter Description" /> -->
+                                        <style>
+                                            .no-extra-space {
+    line-height: 1.2; /* Adjust line height to make it tighter */
+    padding: 10px; /* Modify as needed */
+    margin: 0; /* Remove extra margins */
+    white-space: pre-wrap; /* Ensure text wraps properly */
+}
+
+                                        </style>
+                                        <textarea readonly class="form-control pl-4 pr-4 input_bg border_radius custom_input no-extra-space" 
+          name="description" rows="4" placeholder="Enter Description">{{ $opportunity->detail_description }}</textarea>
+
                                 </div>
                             </div>
                             {{-- <div class="col-md-6 col-12">
@@ -327,16 +339,17 @@
                     </div>
                     <div class="modal-body" id="simpleModalMessage">
                         @if ($opportunity->est_amount == 1)
-                            <p>Thanks for your interest.</p>
-                            <p>{{ __('lang.generate_invoice_confirmation') }} $10</p>
+                            {{-- <p>{{ __('lang.show_interest') }}</p> --}}
+                            {{-- <p>{{ __('lang.generate_invoice_confirmation') }} €10 {{ __('lang.like_to_proceed') }}?</p> --}}
+                            <p>{{ __('lang.show_interest') }} €3 {{ __('lang.like_to_proceed') }}?</p>
                         @endif
                         @if ($opportunity->est_amount == 2)
-                            <p>Thanks for your interest.</p>
-                            <p>{{ __('lang.generate_invoice_confirmation') }} $20</p>
+                            {{-- <p>{{ __('lang.show_interest') }}</p> --}}
+                            <p>{{ __('lang.show_interest') }} €15 {{ __('lang.like_to_proceed') }}?</p>
                         @endif
                         @if ($opportunity->est_amount == 3)
-                            <p>Thanks for your interest.</p>
-                            <p>{{ __('lang.generate_invoice_confirmation') }} $30</p>
+                            {{-- <p>{{ __('lang.show_interest') }}</p> --}}
+                            <p>{{ __('lang.show_interest') }} €20 {{ __('lang.like_to_proceed') }}?</p>
                         @endif
                     </div>
                     <div class="modal-footer">

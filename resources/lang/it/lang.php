@@ -322,7 +322,7 @@ return [
 'text_lugar_envio' => 'Luogo di spedizione del materiale',
 'text_factura_pagada' => 'Fattura pagata',
 'text_factura' => 'Fattura',
-'text_facturas' => 'Fatture',
+'text_facturas' => 'fattura/chat',
 
 'text_aviso_oferta' => '<p> * Non inserire la separazione (. o,) per migliaia. Utilizza solo la separazione (. O,) per inserire i TRE decimali. </ P> <p> * Millesettecentottantacinque centoventicinque centesimi: </ p> <p> 1.785.125 (NO) </ p> <p> 1785.125 (SI) </ p> <p> * Ventimilatrecentoquaranta con centottantadue centesimi: </ p> <p> 20.340.182 (NO) </ p> <p> 20340.182 (SI) </ p>',
 

@@ -131,6 +131,8 @@
                             @if (session('localization') === 'es' || session('localization') === 'en' || session('localization') == '')
                              <option value="25" {{ in_array(25, json_decode($opportunity->project_type ?? '[]')) ? 'selected' : '' }}>TESTING 01</option>
                              <option value="26" {{ in_array(26, json_decode($opportunity->project_type ?? '[]')) ? 'selected' : '' }}>TESTING 02</option>
+                             <option value="27" {{ in_array(27, json_decode($opportunity->project_type ?? '[]')) ? 'selected' : '' }}>Construction Cleaning Services</option>
+                             <option value="28" {{ in_array(28, json_decode($opportunity->project_type ?? '[]')) ? 'selected' : '' }}>Architect</option>
                              @endif
 
                         </select>

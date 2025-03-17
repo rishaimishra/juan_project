@@ -324,7 +324,7 @@ return [
 'text_lugar_envio' => 'Local de expedição do material',
 'text_factura_pagada' => 'Fatura Pagada',
 'text_factura' => 'Fatura',
-'text_facturas' => 'Faturas',
+'text_facturas' => 'fatura/bate-papo',
 
 'text_aviso_oferta' => '<p>*Não entre na separação(. Ou ,) por milhares.  Use apenas separação (. Ou ,) para inserir os TRÊS decimais.</p><p>*Mil setecentos e oitenta e cinco e cento e vinte e cinco centavos:</p><p>1,785.125 (NÃO)</p><p>1785.125 (SIM)</p><p>*Vinte mil trezentos e quarenta e cento e oitenta e dois centavos:</p><p>20,340.182 (NÃO)</p><p>20340.182 (SIM)</p>',
 

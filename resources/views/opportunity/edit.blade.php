@@ -232,10 +232,15 @@
                                 <div class="form-group">
                                     <label
                                         class="col-form-label input_color fz16 pt-3">{{ __('lang.text_descripcion') }}</label>
-                                    <textarea name="description" class="form-control pl-4 pr-4 input_bg border_radius custom_input"
-                                        style="line-height: 1.3; height: 80px;" {{ $opportunity->save_bit == 0 ? 'readonly' : '' }}>
-                                        {{ $opportunity->detail_description }}
-                                    </textarea>
+                                        <textarea name="description" 
+          class="form-control pl-4 pr-4 input_bg border_radius custom_input"
+          style="line-height: 1.3; height: 80px;" 
+          {{ $opportunity->save_bit === 0 ? '' : 'readonly' }}>{{ trim($opportunity->detail_description) }}</textarea>
+
+
+
+
+
                                     {{-- <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" value={{ $opportunity->detail_description }} name="description" type="text" placeholder="Enter Description" /> --}}
                                 </div>
                             </div>
@@ -279,7 +284,6 @@
                                     </select>
                                 </div>
                             </div>
-                            <input type="hidden" id="submit_bit" name="submit_bit" value="">
                             @if ($opportunity->save_bit == 0)
                                 <button type="submit" class="btn base_btn fz20 w-100 mt-4 custom_input line_btn"
                                     onclick="setSubmitValue(0)">{{ __('lang.tx_g_guardar') }}</button>
@@ -294,8 +298,9 @@
     </section>
     <script>
         function setSubmitValue(value) {
-            // Set the value of the hidden input
-            document.getElementById('submit_bit').value = value;
-        }
+    document.getElementById('submit_bit').value = value;
+    console.log('Submit bit value:', value); // Add this line for debugging
+}
+
     </script>
 @endsection

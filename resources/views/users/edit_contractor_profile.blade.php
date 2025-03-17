@@ -272,6 +272,27 @@
                       <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" name="password_confirmation" type="password" />
                     </div>
                   </div>
+
+                  <div class="col-md-6 col-12">
+                    <div class="form-group">
+                      <label class="col-form-label input_color fz16 pt-3">{{__('lang.text_telefono_empresa')}}* </label>
+                      <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" value="{{ $contractor->company_telephone }}" name="company_telephone" type="text" placeholder="Company Telephone " />
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-12">
+                    <div class="form-group">
+                      <label class="col-form-label input_color fz16 pt-3">{{__('lang.text_telefono_movil')}}* </label>
+                      <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" value="{{ $contractor->mobile_num }}" name="mobile_num" type="text" placeholder="Mobile Telephone " />
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-12">
+                    <div class="form-group">
+                      <label class="col-form-label input_color fz16 pt-3">{{__('lang.text_direccion')}}*</label>
+                      <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" value="{{ $contractor->address }}" name="address" type="text" placeholder="Address" />
+                    </div>
+                  </div>
                   {{--  <div class="col-md-6 col-12">
                     <div class="form-group">
                       <label class="col-form-label input_color fz16 pt-3">{{__('lang.text_accept_bidinline')}}*</label>

@@ -8,6 +8,12 @@
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 @endif
+@if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+@endif
 <div class="container">
   <div class="row">
     <div class="col-md-12">
@@ -36,10 +42,10 @@
                           <tr>
                             <th scope="col">Opportunity Name</th>
                             <th scope="col">User phone</th>
-                            <th scope="col">Window With Name</th>
+                            <th scope="col">User Name</th>
                             <th scope="col">City</th>
-                            <th scope="col">Estimate Amount</th>
-                            <th scope="col">Estimate Time</th>
+                            {{-- <th scope="col">Estimate Amount</th> --}}
+                            {{-- <th scope="col">Estimate Time</th> --}}
                             <th scope="col">Best time to reach</th>
                             <th scope="col">Detail Description</th>
                             <th scope="col">Action</th>
@@ -50,10 +56,10 @@
                           <tr>
                             <td>{{ $item->opportunity_name }}</td>
                             <td>{{ $item->phone }}</td>
-                            <td>{{ $item->window_with_name }}</td>
+                            <td>{{ $item->name }}</td>
                             <td>{{ $item->city }}</td>
-                            <td>{{ $item->est_amount }}</td>
-                            <td>{{ $item->est_time }}</td>
+                            {{-- <td>{{ $item->est_amount }}</td> --}}
+                            {{-- <td>{{ $item->est_time }}</td> --}}
                             <td>{{ $item->best_time }}</td>
                             <td>{{ $item->detail_description }}</td>
                             <td>

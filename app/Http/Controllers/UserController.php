@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Paise;
 use App\Models\CompanyType;
 use App\Models\Opportunity;
+use Illuminate\Support\Facades\Validator;
+
 
 class UserController extends Controller
 {
@@ -272,6 +274,34 @@ class UserController extends Controller
     //     'email' => 'required|email|unique:users,email',
     //     'password' => 'required|string|min:8|confirmed',
     // ]);
+
+    $messages = [
+        'detail_description.required' => 'Please provide your requirement.',
+        'name.required' => 'Please provide your full name.',
+        'country.required' => 'Please provide your country.',
+        'state.required' => 'Please provide your province/state.',
+        'mobile_num.required' => 'Please provide your telephone.',
+        'email.required' => 'Please provide email address.',
+    ];
+
+    $validator = Validator::make($request->all(), [
+        'detail_description' => 'required',
+        'name' => 'required|string|max:255',
+        'country' => 'required',
+        'state' => 'required',
+        'mobile_num' => 'required|max:20',
+        'email' => 'required|email|unique:users,email'
+       ],$messages);
+
+    // Check if validation fails
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Validation error',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
 
     // Handle identity document if provided
     $identityDocumentPath = null;

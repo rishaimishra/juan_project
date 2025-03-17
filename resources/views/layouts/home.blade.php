@@ -23,6 +23,8 @@
     <script type="text/javascript" src="{{ asset('public/assets/js/jquery.min.js') }}"></script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PL6B14B177"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
         window.dataLayer = window.dataLayer || [];
 
@@ -40,8 +42,8 @@
     @yield('content')
     @include('includes.footer')
     @yield('scripts')
-    <script src="{{ asset('public/assets/js/jquery-2.2.4.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('public/assets/js/jquery-1.12.4.js') }}" type="text/javascript"></script>
+    <!-- <script src="{{ asset('public/assets/js/jquery-2.2.4.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('public/assets/js/jquery-1.12.4.js') }}" type="text/javascript"></script> -->
     <script src="{{ asset('public/assets/js/jquery-ui.js') }}" type="text/javascript"></script>
     <script src="{{ asset('public/assets/js/popper.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('public/assets/js/bootstrap.min.js') }}" type="text/javascript"></script>

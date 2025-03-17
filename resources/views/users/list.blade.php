@@ -139,6 +139,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @php
+                                        $statename = App\Models\Provincia::where('id', $item->state)->first();
+                                    @endphp
 
                                     <!-- Reject Confirmation Modal -->
                                     <div class="modal fade" id="rejectModal.{{ $item->id }}" tabindex="-1"
@@ -186,7 +189,9 @@
                                                     <div
                                                         class="form-group d-flex justify-content-between align-items-center mb-3">
                                                         <label for="">State</label>
-                                                        <p class="mb-0" id="state_{{ @$item->id }}"></p>
+                                                        <!-- <p class="mb-0" id="state_{{ @$item->id }}"></p> -->
+                                                        <p class="mb-0">{{ $statename->nombre ?? 'N/A' }}</p>
+
                                                     </div>
 
 

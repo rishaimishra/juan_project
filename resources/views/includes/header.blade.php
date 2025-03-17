@@ -59,36 +59,26 @@
                     @endif
                 @endif
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ml-auto">
-                        <!-- <li class="nav-item">
-                    <a class="nav-link p-2 p-xl-3 mr-2 text_color" href="{{ url('/account') }}">{{ __('lang.text_cuenta') }}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link p-2 p-xl-3 mr-2 text_color" href="{{ url('/compras') }}">{{ __('lang.text_compras') }}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link p-2 p-xl-3 mr-lg-2 mr-xl-4 text_color" href="{{ url('/ventas') }}">{{ __('lang.text_ventas') }}</a>
-                </li>		 -->
-
-                        @foreach (config('localisation.locales') as $locales)
-                            <li class="nav-item mhide">
-                                <a class="nav-link p-2 p-xl-3" href="{{ route('localization', $locales) }}"><img
-                                        src="{{ asset('public/assets/img/' . $locales . '.png') }}"
-                                        title={{ $locales }} class="rounded-circle" /></a>
-                            </li>
-                        @endforeach
-                    </ul>
-
-                    <ul class="navbar-nav ml-auto mshow">
+                    <ul class="navbar-nav ml-auto d-none d-lg-flex"> <!-- Show only on large screens -->
                         @foreach (config('localisation.locales') as $locales)
                             <li class="nav-item">
-                                <a class="nav-link p-2 p-xl-3" href="{{ route('localization', $locales) }}"><img
-                                        src="{{ asset('public/assets/img/' . $locales . '.png') }}"
-                                        title={{ $locales }} class="rounded-circle" /></a>
+                                <a class="nav-link p-2 p-xl-3" href="{{ route('localization', $locales) }}">
+                                    <img src="{{ asset('public/assets/img/' . $locales . '.png') }}" title="{{ $locales }}" class="rounded-circle" />
+                                </a>
                             </li>
                         @endforeach
-
                     </ul>
+                    
+                    <ul class="navbar-nav ml-auto d-flex d-lg-none"> <!-- Show only on mobile -->
+                        @foreach (config('localisation.locales') as $locales)
+                            <li class="nav-item">
+                                <a class="nav-link p-2 p-xl-3" href="{{ route('localization', $locales) }}">
+                                    <img src="{{ asset('public/assets/img/' . $locales . '.png') }}" title="{{ $locales }}" class="rounded-circle" />
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                    
                     @if (Auth::user())
                         <a class="btn header_btn mr-2 mr-xl-3 text-uppercase" href="{{ route('custom-logout') }}"
                             onclick="event.preventDefault();
@@ -108,6 +98,16 @@
                                 class="btn header_btn text-uppercase">{{ __('lang.contractor_login') }}</a>
                         </form>
                     @endif
+
+                    <script>
+                        document.querySelector('.header_btn[href="{{ route('custom-logout') }}"]').addEventListener('click', function(event) {
+                            event.preventDefault();
+                            if (confirm("Are you sure you want to log out?")) {
+                                document.getElementById('logout-form').submit();
+                            }
+                        });
+
+                    </script>
 
                 </div>
             </nav>

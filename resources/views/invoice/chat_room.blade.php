@@ -50,6 +50,7 @@
                                 {{--  <th scope="col">{{ __('lang.text_email') }}</th>  --}}
                                 {{--  <th scope="col">{{ __('lang.text_po_name') }}</th>  --}}
                                 {{--  <th scope="col">{{ __('lang.text_status') }}</th>  --}}
+                                <th scope="col">{{ __('lang.text_opportunity_name') }}</th> 
                                 <th scope="col"></th>
                                 </tr>
                             </thead>
@@ -58,7 +59,7 @@
                                    <tr>
                                 <td>{{ $opp['user']['name'] ?? '' }}</td>
                                 <td>{{ $opp['user']['email'] ?? '' }}</td>
-                                {{--  <td>{{ $opp->window_with_name }}</td>  --}}
+                                 <td>{{ $oppname->opportunity_name }}</td> 
                                
                                 <td>
                                     <a href="{{ route('message-opportunity', ['id' => $opp->id, 'oppId' => $opp->opportunity_id]) }}" class="btn btn-primary">{{ __('lang.text_mensaje') }}</a>

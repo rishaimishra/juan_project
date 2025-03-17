@@ -154,20 +154,33 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if ($opp->admin_bit == 2)
-                                                    {{ __('lang.approved_text') }}
-                                                @else
-                                                    @if ($opp->save_bit == 0)
-                                                        {{ __('lang.draft_text') }}
-                                                    @elseif($opp->save_bit == 1)
-                                                        {{ __('lang.publish_text') }}
-                                                    @endif
-                                                @endif
+                                                @switch($opp->admin_bit)
+                                                    @case(2)
+                                                        {{ __('lang.approved_text') }}
+                                                        @break
+                                                    @case(3)
+                                                        {{ __('lang.opp_closed') }}
+                                                        @break
+                                                    @default
+                                                        @if ($opp->save_bit === 0)  {{-- Use strict comparison (===) --}}
+                                                            {{ __('lang.draft_text') }}
+                                                        @elseif ($opp->save_bit === 1)  {{-- Use strict comparison (===) --}}
+                                                            {{ __('lang.publish_text') }}
+                                                        @else
+                                                            {{ __('lang.unknown_status') }}  {{-- Handle other save_bit values --}}
+                                                        @endif
+                                                @endswitch
                                             </td>
                                             <td>
                                                 @if ($opp->save_bit == 0)
                                                     <a href="{{ route('see-opportunity', ['id' => $opp->id]) }}"
                                                         class="btn btn-primary mar_top">{{ __('lang.text_see') }}</a>
+                                                @elseif ($opp->save_bit == 1 && $opp->admin_bit == 2)
+                                                <a href="{{ route('see-opportunity', ['id' => $opp->id]) }}"
+                                                    class="btn btn-primary mar_top mb-2">{{ __('lang.text_see') }}</a>
+                                                    <a href="{{ route('chat-opportunity', ['id' => $opp->id]) }}"
+                                                    class="btn btn-primary mar_top">{{ __('lang.chat') }}</a>
+
                                                 @elseif ($opp->admin_bit == 2)
                                                     <a href="{{ route('chat-opportunity', ['id' => $opp->id]) }}"
                                                         class="btn btn-primary mar_top">{{ __('lang.chat') }}</a>

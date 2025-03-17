@@ -29,6 +29,8 @@ return [
         'opportunity_create_email_text1' => 'Legal notice: this message and the attached files, if any, are confidential...',
         'opportunity_create_email_text2' => 'You have received an invitation to analyze a Purchase Order Opportunity',
         'opportunity_create_email_text3' => 'You have been invited to check an Opportunity',
+        'opportunity_create_email_text3_for_user' => 'Your Opportunity is approved by Admin',
+        'opportunity_email_for_user' => 'is approved by Admin',
         'opportunity_create_email_text4' => 'Please log in to Bidinproject Contractor Area with your credentials to see the content of the Opportunity.',
     ],
 

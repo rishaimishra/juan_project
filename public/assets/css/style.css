@@ -274,9 +274,9 @@ footer .no_company > p:after {
 }
 
 .base_btn {
-  background-color: #0772b1;
+  background-color: #0772b1 !important;
   border-radius: 30px;
-  color: #ffffff;
+  color: #ffffff !important;
   min-width: 170px;
   border: 1px solid #0772b1;
 }

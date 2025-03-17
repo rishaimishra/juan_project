@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Hash; // Add this line
 use Illuminate\Support\Facades\Mail; // Add this line
 use Illuminate\Support\Facades\App;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use DB;
+use Carbon\Carbon;
 
 class InvoiceController extends Controller
 {
@@ -21,7 +23,13 @@ class InvoiceController extends Controller
     {
         $user_id = Auth::user()->id;
         $invoices = Invoice::where('user_id', $user_id)->with('opportunity')->get();
-        return view('invoice.list', compact('invoices'));
+
+        $todayMessages = DB::table('opportunity_messages')
+        ->whereDate('created_at', Carbon::today())
+        ->where('reciever_id',$user_id)
+        // ->select('sender_id', 'message', 'created_at')
+        ->get();
+        return view('invoice.list', compact('invoices','todayMessages'));
     }
 
     public function get_invoice()
@@ -48,7 +56,7 @@ class InvoiceController extends Controller
                 'purchase_units' => [
                     [
                         'amount' => [
-                            'currency_code' => 'USD',
+                            'currency_code' => 'EUR',
                             'value' => $amount, // Use dynamic amount
                         ],
                     ],

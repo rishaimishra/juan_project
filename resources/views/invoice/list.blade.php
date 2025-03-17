@@ -52,6 +52,7 @@
                                             <th scope="col">{{ __('lang.text_po_name') }}</th> --}}
                                         <th scope="col">{{ __('lang.text_status') }}</th>
                                         <th scope="col"></th>
+                                        <th scope="col">Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,62 +62,142 @@
                                             <td>{{ $opp->status }}</td>
                                             <td>
                                                 @if ($opp->status == 'unpaid')
-                                                    <a href="{{ route('paypal.payment', ['amount' => $opp->amount, 'id' => $opp->id]) }}"
-                                                        class="btn btn-primary btn-sm">{{ __('lang.pay_invoice') }}</a>
-                                                    <form id="form-{{ $opp->id }}"
-                                                        action="https://pgw.ceca.es/tpvweb/tpv/compra.action" method="POST"
-                                                        enctype="application/x-www-form-urlencoded" style="display: inline">
-                                                        @csrf
-                                                        <input type="hidden" name="Key_encryption" value="02WLXVR4">
-                                                        <input name="MerchantID" type="hidden" value="086941259"
-                                                            id="merchant_id-{{ $opp->id }}">
-                                                        <input name="AcquirerBIN" type="hidden" value="0000554026"
-                                                            id="AcquirerBIN-{{ $opp->id }}">
-                                                        <input name="TerminalID" type="hidden" value="00000003"
-                                                            id="TerminalID-{{ $opp->id }}">
+                                                    @php
+                                                        $amount = optional(
+                                                            App\Models\Opportunity::find($opp->opportunity_id),
+                                                        )->est_amount;
 
-                                                        <input name="URL_OK" type="hidden"
-                                                            value="{{ route('card.success', ['id' => $opp->id]) }}"
-                                                            id="URL_OK-{{ $opp->id }}">
-                                                        <input name="URL_NOK" type="hidden"
-                                                            value="{{ route('invoice-list') }}"
-                                                            id="URL_NOK-{{ $opp->id }}">
+                                                        if ($amount == 1) {
+                                                            // $pay_amount = 10;
+                                                            $pay_amount = 3;
+                                                        } elseif ($amount == 2) {
+                                                            $pay_amount = 15;
+                                                            // $pay_amount = 0.15;
+                                                        } elseif ($amount == 3) {
+                                                            $pay_amount = 20;
+                                                            // $pay_amount = 0.20;
+                                                        } else {
+                                                            $pay_amount = 0;
+                                                        }
+                                                    @endphp
+                                                    <div class="d-flex flex-wrap align-items-center gap-2">
 
-                                                        <input name="Firma" type="hidden" value=""
-                                                            id="Firma-{{ $opp->id }}">
-                                                        <input name="Cifrado" type="hidden" value="SHA2"
-                                                            id="Cifrado-{{ $opp->id }}">
+                                                        {{ __('lang.pay_via') }}:<a
+                                                            href="{{ route('paypal.payment', ['amount' => $pay_amount, 'id' => $opp->id]) }}"
+                                                            class="btn btn-primary btn-sm"
+                                                            style="margin-left: 5px;">{{ __('lang.pay_invoice') }}</a>
+                                                        <!-- {{ $opp->amount }} -->
+                                                        <form id="form-{{ $opp->id }}"
+                                                            action="https://pgw.ceca.es/tpvweb/tpv/compra.action"
+                                                            method="POST" enctype="application/x-www-form-urlencoded"
+                                                            style="display: inline">
+                                                            @csrf
+                                                            <input type="hidden" name="Key_encryption" value="02WLXVR4">
+                                                            <input name="MerchantID" type="hidden" value="086941259"
+                                                                id="merchant_id-{{ $opp->id }}">
+                                                            <input name="AcquirerBIN" type="hidden" value="0000554026"
+                                                                id="AcquirerBIN-{{ $opp->id }}">
+                                                            <input name="TerminalID" type="hidden" value="00000003"
+                                                                id="TerminalID-{{ $opp->id }}">
 
-                                                        <input name="Num_operacion" class="form-control" type="hidden"
-                                                            value="{{ $opp->id }}"
-                                                            id="Num_operacion-{{ $opp->id }}">
-                                                        <input name="Importe" class="form-control" type="hidden"
-                                                            value="{{ $opp->amount }}" id="Importe-{{ $opp->id }}">
+                                                            <input name="URL_OK" type="hidden"
+                                                                value="{{ route('card.success', ['id' => $opp->id]) }}"
+                                                                id="URL_OK-{{ $opp->id }}">
+                                                            <input name="URL_NOK" type="hidden"
+                                                                value="{{ route('invoice-list') }}"
+                                                                id="URL_NOK-{{ $opp->id }}">
 
-                                                        <input name="TipoMoneda" type="hidden" value="978"
-                                                            id="TipoMoneda-{{ $opp->id }}">
-                                                        <input name="Exponente" type="hidden" value="2"
-                                                            id="Exponente-{{ $opp->id }}">
-                                                        <input name="Pago_soportado" type="hidden" value="SSL"
-                                                            id="Pago_soportado-{{ $opp->id }}">
-                                                        <input name="Idioma" class="form-control" type="hidden"
-                                                            value="6" id="Idioma-{{ $opp->id }}" readonly>
+                                                            <input name="Firma" type="hidden" value=""
+                                                                id="Firma-{{ $opp->id }}">
+                                                            <input name="Cifrado" type="hidden" value="SHA2"
+                                                                id="Cifrado-{{ $opp->id }}">
 
-                                                        <button type="submit" value="Make Payment"
-                                                            class="btn btn-primary generate-hash btn-sm"
-                                                            data-id="{{ $opp->id }}">Card</button>
-                                                    </form>
+                                                            <input name="Num_operacion" class="form-control" type="hidden"
+                                                                value="{{ $opp->id }}"
+                                                                id="Num_operacion-{{ $opp->id }}">
+                                                            <!-- <input name="Importe" class="form-control" type="hidden"
+                                                                        value="{{ $opp->amount }}" id="Importe-{{ $opp->id }}"> -->
+
+
+
+                                                            <input name="Importe" class="form-control" type="hidden"
+                                                                value="{{ round($pay_amount, 2) * 100 }}"
+                                                                id="Importe-{{ $opp->id }}">
+
+
+                                                            <!-- opportunity_id -->
+
+
+
+
+
+
+
+                                                            <input name="TipoMoneda" type="hidden" value="978"
+                                                                id="TipoMoneda-{{ $opp->id }}">
+                                                            <input name="Exponente" type="hidden" value="2"
+                                                                id="Exponente-{{ $opp->id }}">
+                                                            <input name="Pago_soportado" type="hidden" value="SSL"
+                                                                id="Pago_soportado-{{ $opp->id }}">
+                                                            <input name="Idioma" class="form-control" type="hidden"
+                                                                value="6" id="Idioma-{{ $opp->id }}" readonly>
+                                                            <button type="submit" value="Make Payment"
+                                                                class="btn btn-primary generate-hash btn-sm"
+                                                                style="margin-left:8px"
+                                                                data-id="{{ $opp->id }}">{{ __('lang.card') }} </button>
+                                                        </form>
+                                                        <td>{{$pay_amount}} EURO</td>
+                                                    </div>
                                                 @else
-                                                    <a href="{{ asset('public/' . $opp->invoice_path) }}" download>
-                                                        <svg style="width:30px;" xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                                            stroke="currentColor" class="size-6">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                                        </svg>
-                                                    </a>
-                                                    <a href="{{ route('contractor-message-opportunity', ['id' => $opp->id, 'oppId' => $opp->opportunity_id]) }}"
-                                                        class="btn btn-primary btn-sm">{{ __('lang.message') }}</a>
+                                                    @if ($todayMessages->isNotEmpty())
+                                                        <style>
+                                                            .new-message-icon {
+                                                                display: inline-block;
+                                                                margin-right: 5px;
+                                                            }
+
+                                                            .animated-arrow {
+                                                                width: 18px;
+                                                                height: 18px;
+                                                                animation: bounce 0.8s infinite;
+                                                            }
+
+                                                            @keyframes bounce {
+
+                                                                0%,
+                                                                100% {
+                                                                    transform: translateY(0);
+                                                                }
+
+                                                                50% {
+                                                                    transform: translateY(-5px);
+                                                                }
+                                                            }
+                                                        </style>
+                                                        <div class="new-message-icon">
+                                                            <svg class="animated-arrow" xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                                                stroke="red">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </div>
+                                                    @endif
+                                                    @if ($opp->opportunity->admin_bit !== 3)
+                                                        <a href="{{ asset('public/' . $opp->invoice_path) }}" download>
+                                                            <svg style="width:30px;" xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                                stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                                            </svg>
+                                                        </a>
+
+                                                        <a href="{{ route('contractor-message-opportunity', ['id' => $opp->id, 'oppId' => $opp->opportunity_id]) }}"
+                                                            class="btn btn-primary btn-sm">{{ __('lang.message') }}</a>
+                                                    @else
+                                                        Window Closed
+                                                    @endif
                                                 @endif
                                             </td>
                                         </tr>

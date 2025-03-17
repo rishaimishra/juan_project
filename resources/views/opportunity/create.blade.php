@@ -190,8 +190,35 @@
                                     {{--  <label class="col-form-label input_color fz16 pt-3">{{__('lang.text_estimated_datetime')}}</label>  --}}
                                     <label
                                         class="col-form-label input_color fz16 pt-3">{{ __('lang.estimate_start_project') }}</label>
-                                    <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" name="date"
-                                        type="datetime-local" placeholder="Enter City" />
+                                    <!-- <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" name="date"
+                                        type="datetime-local" placeholder="Enter City" /> -->
+
+                                        <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" 
+       name="date" type="datetime-local" 
+       placeholder="Enter Date" id="datetimeInput" />
+
+<script>
+window.onload = () => {
+  const datetimeInput = document.getElementById('datetimeInput');
+  const now = new Date();
+  
+  // Manually format the current date and time for datetime-local (YYYY-MM-DDTHH:MM)
+  const pad = (num) => String(num).padStart(2, '0');
+  const formattedDateTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  datetimeInput.min = formattedDateTime;
+
+  // Validate user input on change
+  datetimeInput.addEventListener('change', (event) => {
+    const selectedDate = new Date(event.target.value);
+    if (selectedDate < now) {
+      alert('You cannot select a past date and time.');
+      event.target.value = ''; // Clear the input
+    }
+  });
+};
+</script>
+
                                 </div>
                             </div>
                             <div class="col-md-6 col-12">

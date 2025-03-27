@@ -2,88 +2,248 @@
 
 @section('content')
     <style>
-        .darker {
-            border-color: #ccc;
-            background-color: #ddd;
+        /* WhatsApp-inspired styling */
+        .chat-container {
+            height: 100vh;
+            background-color: #f0f2f5;
         }
 
-        .chat-message::after {
-            content: "";
-            clear: both;
-            display: table;
+        .sidebar {
+            background-color: #ffffff;
+            border-right: 1px solid #e9edef;
+            height: 100vh;
+            padding: 0;
+        }
+
+        .chat-header {
+            background-color: #f0f2f5;
+            padding: 15px;
+            border-bottom: 1px solid #e9edef;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 0;
+        }
+
+        .messages-container {
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #e5ddd5;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+            background-repeat: repeat;
+            scroll-behavior: smooth;
+        }
+
+        .message-input {
+            background-color: #f0f2f5;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            border-top: 1px solid #e9edef;
         }
 
         .chat-message {
+            transition: all 0.15s ease-out;
+            max-width: 70%;
             margin-bottom: 10px;
-            padding: 10px;
+            padding: 8px 12px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
+            clear: both;
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .chat-message img {
+        .chat-message.sent {
+            background-color: #d9fdd3;
+            float: right;
+            border-top-right-radius: 0;
+        }
+
+        .chat-message.received {
+            background-color: #ffffff;
             float: left;
-            max-width: 100px;
-            width: 100%;
-            margin-right: 20px;
+            border-top-left-radius: 0;
+        }
+
+        .message-time {
+            font-size: 0.7em;
+            color: #667781;
+            margin-top: 5px;
+            display: block;
+            text-align: right;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
         }
 
-        .chat-message img.right {
-            float: right;
-            margin-left: 20px;
-            margin-right: 0;
+        .message-attachments {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
-        .time-right {
-            float: right;
-            color: #aaa;
+        .message-attachments img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
 
-        .time-left {
-            float: left;
-            color: #999;
+        .message-attachments img:hover {
+            transform: scale(1.05);
         }
 
-        .send-message {
-            float: right;
-
+        .pdf-attachment {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f0f2f5;
+            border-radius: 5px;
+            color: #333;
+            text-decoration: none;
         }
 
-        ul {
-            list-style-type: none;
+        .pdf-attachment i {
+            margin-right: 5px;
+            color: #e74c3c;
         }
 
-        .opp_list li a {
-            color: #0772b1;
+        .date-separator {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
         }
 
-        .opp_list li a:hover {
-            color: #0772b1;
+        .date-separator span {
+            background-color: #e5ddd5;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            color: #667781;
         }
 
-        @media only screen and (max-width:600px) {
-            .login_section {
-                margin-top: 40px !important;
-            }
-
+        /* Modal styling */
+        .message-modal .modal-content {
+            border-radius: 10px;
         }
 
-        #preloader {
+        .message-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .message-modal .modal-footer {
+            border-top: none;
+        }
+
+        /* Loading spinner */
+        .blur-loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+            display: none;
+        }
+
+        /* Image preview modal */
+        #image-preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             z-index: 9999;
             display: none;
         }
 
-        #image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;}div#image-preview-modal span{display:none;}@media only screen and (max-width:600px){.message-attachments{margin-top:100px}}
+        #preview-img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+        }
 
-        #image-preview-modal #preview-img{width:auto;max-width:90%!important;height:auto;margin-top:10px!important;max-height:70%!important;}#image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;width:100vw!important;height:100vh!important;}
-        @media only screen and (max-width:600px){#image-preview-modal{padding-top:100px}}
+        .close-preview {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .chat-container {
+                margin-top: 25px;
+            }
+            .sidebar {
+                display: none;
+            }
+            
+            .chat-message {
+                max-width: 85%;
+            }
+            
+            .message-attachments img {
+                max-width: 150px;
+            }
+            
+            .chat-header {
+                padding: 10px;
+            }
+        }
+
+        /* Animation for new messages */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .new-message {
+            animation: fadeIn 0.3s ease-out;
+        }
     </style>
 
-    <!-- Success Message -->
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -91,239 +251,336 @@
         </div>
     @endif
 
-    <!-- Validation Errors -->
+    <div class="container-fluid chat-container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 d-none d-md-block sidebar">
+                <div class="chat-header">
+                    <h5 class="mb-0">{{ __('lang.text_user_area') }}</h5>
+                </div>
+                <div class="p-3">
+                    <ul class="nav flex-column opp_list">
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="{{ route('users-dashboard') }}">
+                                <i class="fas fa-list me-2"></i>
+                                {{ __('lang.text_opportunity_list') }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="{{ route('create-opportunity') }}">
+                                <i class="fas fa-plus me-2"></i>
+                                {{ __('lang.text_create_opportunity') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
-    <section>
-        <div>
-            <section class="text-center bg_color login_section">
-                <h3 class="white fz36 mb-0 font_bold">{{ __('lang.text_user_area') }}</h3>
-            </section>
-            <div class="login_form p-5 font_bold c-form">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <ul class="opp_list">
-                                <li style="margin-bottom: 20px"><a
-                                        href="{{ route('users-dashboard') }}">{{ __('lang.text_opportunity_list') }}</a>
-                                </li>
-                                <li><a href="{{ route('create-opportunity') }}">{{ __('lang.text_create_opportunity') }}</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-8">
-                            <!-- Send Message Button -->
-                            {{-- <button class="send-message btn btn-primary" data-toggle="modal"
-                                data-target="#exampleModalLong">{{ __('lang.send_message') }}</button> --}}
-
-
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
-                                aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLongTitle">{{ __('lang.send_message') }}
-                                            </h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <form action="{{ route('send-message') }}" method="POST"
-                                            enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="modal-body">
-                                                <input type="hidden" name="oppId" value="{{ $oppId }}">
-                                                <input type="hidden" name="invoice_id" value="{{ $id }}">
-                                                <div class="input-group">
-                                                    <textarea id="emojionearea1" name="messageText" class="form-control" rows="5"
-                                                        placeholder="Type your message here..."></textarea>
-                                                </div>
-                                                <input type="file" name="chat_images[]" multiple>
-                                                <small>jpg, jpeg, png, gif, pdf allowed &nbsp; max-size: 10mb</small>
-                                                {{-- <span class="text-danger">{{ $errors->first('chat_images') }}</span> --}}
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">{{ __('lang.close') }}</button>
-                                                <button type="submit" class="btn btn-primary"
-                                                    id="sendMessageBtn">{{ __('lang.send') }}</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <h2>{{ __('lang.chat_messages') }}</h2>
-                            <h4>{{ __('lang.text_opportunity_name') }}: {{ $oppname->opportunity_name }}</h4>
-
-
-
-                            <div class="chat-box" id="chatBox">
-                                <div id="preloader" class="d-flex justify-content-center align-items-center">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button class="send-message btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#exampleModalLong">{{ __('lang.send_message') }}</button>
-
-                                <div id="image-preview-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); text-align: center;">
-                                    <span>X</span>
-                                    <img id="preview-img" style="max-width: 90%; margin-top: 50px;">
-                                    <br>
-                                    <button onclick="document.getElementById('image-preview-modal').style.display='none'" style="margin-top: 10px; padding: 5px 15px; background: white; cursor: pointer;">Close</button>
-                                </div>
-                                
-
-
+            <!-- Main chat area -->
+            <div class="col-md-9 col-12 chat-area">
+                <div class="chat-header d-flex align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img src="https://i.ibb.co/Yt7TT8T/1144760.png" class="chat-avatar" alt="Opportunity">
+                        <div>
+                            <h5 class="mb-0">{{ $oppname->opportunity_name }}</h5>
+                            <small class="text-muted">{{ __('lang.text_opportunity_name') }}</small>
                         </div>
                     </div>
                 </div>
-                <!-- </form> -->
+
+                <!-- Messages container -->
+                <div id="message-container" class="messages-container">
+                    <div id="preloader" class="d-flex justify-content-center align-items-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message input -->
+                <div class="message-input">
+                    <button class="btn btn-light rounded-circle" data-bs-toggle="modal" data-bs-target="#messageModal">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="btn btn-primary rounded-pill flex-grow-1" data-bs-toggle="modal" data-bs-target="#messageModal">
+                        {{ __('lang.send_message') }}
+                    </button>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade message-modal" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">{{ __('lang.send_message') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="sendMessageForm" action="{{ route('send-message') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="oppId" value="{{ $oppId }}">
+                        <input type="hidden" name="invoice_id" value="{{ $id }}">
+                        <div class="mb-3">
+                            <textarea id="messageText" name="messageText" class="form-control" rows="5" 
+                                      placeholder="Type your message here..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="chatImages" class="form-label">Attachments</label>
+                            <input class="form-control" type="file" name="chat_images[]" id="chatImages" multiple>
+                            <div class="form-text">jpg, jpeg, png, gif, pdf allowed (max-size: 10mb)</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="sendMessageBtn">
+                            <i class="fas fa-paper-plane me-1"></i> Send
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div id="image-preview-modal">
+        <span class="close-preview" onclick="closeImagePreview()">&times;</span>
+        <img id="preview-img">
+    </div>
 
     <script>
-        function openImagePreview(imageUrl) {
-            let previewModal = document.getElementById('image-preview-modal');
-            let previewImg = document.getElementById('preview-img');
+        // Global variables to track messages
+        let lastMessageId = 0;
+        let currentDateSeparator = '';
+        let isFirstLoad = true;
+        let scrollPosition = 0;
+        let isUserScrolledUp = false;
 
-            if (previewModal && previewImg) {
-                previewImg.src = imageUrl;
-                previewModal.style.display = 'block';
+        // Format date as "Today", "Yesterday", or date
+        function formatDate(datetime) {
+            const date = new Date(datetime);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Yesterday';
             } else {
-                console.error("Modal or image element not found!");
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             }
         }
-    </script>
 
-    <script>
-        $(document).ready(function() {
+        // Format time as HH:MM
+        function formatTime(datetime) {
+            return new Date(datetime).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
 
-            // Handle form submission using AJAX
-            $('#exampleModalLong form').submit(function(event) {
-                event.preventDefault(); // Prevent default form submission
+        // Create a message element
+        function createMessageElement(message) {
+            const isSender = (message.sender_id == {{ Auth::id() }});
+            const messageClass = isSender ? 'chat-message sent' : 'chat-message received';
+            const avatar = isSender ? 
+                'https://i.ibb.co/k8mkCZH/free-user-icon-3296-thumb.png' : 
+                'https://i.ibb.co/Yt7TT8T/1144760.png';
+            
+            let messageHtml = `
+                <div class="${messageClass} new-message" data-message-id="${message.id}">
+                    <p>${message.message || ''}</p>
+                    <span class="message-time">${formatTime(message.created_at)}</span>
+            `;
+            
+            // Handle attachments
+            if (message.image) {
+                messageHtml += '<div class="message-attachments">';
+                message.image.split(',').forEach(function(file) {
+                    const filePath = `{{ asset('storage/app/public/') }}/${file}`;
+                    const extension = file.split('.').pop().toLowerCase();
+                    
+                    if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+                        messageHtml += `
+                            <img src="${filePath}" 
+                                 onclick="openImagePreview('${filePath}')" 
+                                 alt="Attachment">
+                        `;
+                    } else if (extension === 'pdf') {
+                        messageHtml += `
+                            <a href="${filePath}" target="_blank" class="pdf-attachment">
+                                <i class="fas fa-file-pdf"></i> ${file.split('/').pop()}
+                            </a>
+                        `;
+                    }
+                });
+                messageHtml += '</div>';
+            }
+            
+            messageHtml += '</div>';
+            return messageHtml;
+        }
 
-                let formData = new FormData(this);
+        // Add date separator if needed
+        function addDateSeparator(dateStr, container) {
+            if (dateStr !== currentDateSeparator) {
+                container.append(`
+                    <div class="date-separator">
+                        <span>${dateStr}</span>
+                    </div>
+                `);
+                currentDateSeparator = dateStr;
+            }
+        }
 
-                $.ajax({
-                    url: "{{ route('send-message') }}",
-                    type: "POST",
-                    data: formData,
-                    processData: false, // Don't process FormData
-                    contentType: false, // Set content type to false
-                    success: function(response) {
-                        // Reset the form
-                        $('#exampleModalLong form')[0].reset();
+        // Check if user has scrolled up
+        function checkScrollPosition(container) {
+            const threshold = 100; // pixels from bottom
+            const position = container.scrollTop() + container.innerHeight();
+            const height = container[0].scrollHeight;
+            isUserScrolledUp = position < height - threshold;
+        }
 
-                        // Clear file input manually
-                        $('input[name="chat_images"]').val('');
-
-                        // Clear the emojionearea text field
-                        if ($("#emojionearea1").data("emojioneArea")) {
-                            $("#emojionearea1").data("emojioneArea").setText('');
+        // Load messages efficiently
+        function fetchMessages() {
+            $.ajax({
+                url: "{{ route('message-opportunity', [$id, $oppId]) }}",
+                type: "GET",
+                data: { last_message_id: lastMessageId },
+                success: function(response) {
+                    if (response.messages && response.messages.length > 0) {
+                        const messageContainer = $("#message-container");
+                        
+                        // Store scroll position before updates
+                        scrollPosition = messageContainer.scrollTop();
+                        
+                        // Check if user has scrolled up
+                        checkScrollPosition(messageContainer);
+                        
+                        // On first load, add all messages
+                        if (isFirstLoad) {
+                            messageContainer.empty();
+                            response.messages.forEach(function(message) {
+                                const messageDate = formatDate(message.created_at);
+                                addDateSeparator(messageDate, messageContainer);
+                                messageContainer.append(createMessageElement(message));
+                                lastMessageId = Math.max(lastMessageId, message.id);
+                            });
+                            isFirstLoad = false;
+                            messageContainer.scrollTop(messageContainer[0].scrollHeight);
+                        } 
+                        // On subsequent loads, only add new messages
+                        else {
+                            let newMessages = [];
+                            response.messages.forEach(function(message) {
+                                if (message.id > lastMessageId) {
+                                    const messageDate = formatDate(message.created_at);
+                                    addDateSeparator(messageDate, messageContainer);
+                                    messageContainer.append(createMessageElement(message));
+                                    newMessages.push(message.id);
+                                }
+                            });
+                            
+                            // Update last message ID
+                            if (newMessages.length > 0) {
+                                lastMessageId = Math.max(...newMessages);
+                                
+                                // Only auto-scroll if user hasn't scrolled up
+                                if (!isUserScrolledUp) {
+                                    messageContainer.scrollTop(messageContainer[0].scrollHeight);
+                                }
+                            }
                         }
+                    } else if (isFirstLoad) {
+                        $('#message-container').html('<div class="text-center py-3 text-muted">No messages yet</div>');
+                        isFirstLoad = false;
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error loading messages:", xhr);
+                    if (isFirstLoad) {
+                        $('#message-container').html('<div class="text-center py-3 text-danger">Error loading messages</div>');
+                        isFirstLoad = false;
+                    }
+                },
+                complete: function() {
+                    // Hide the preloader after the AJAX request completes
+                    $("#preloader").hide();
+                }
+            });
+        }
 
-                        // Close modal properly
-                        $('#exampleModalLong').modal('hide');
+        // Image preview functions
+        function openImagePreview(src) {
+            const previewModal = document.getElementById('image-preview-modal');
+            const previewImg = document.getElementById('preview-img');
+            previewImg.src = src;
+            previewModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
 
-                        // Update chat messages
+        function closeImagePreview() {
+            document.getElementById('image-preview-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Form submission
+        $(document).ready(function() {
+            // Initial load
+            fetchMessages();
+            
+            // Set up scroll event listener
+            $('#message-container').on('scroll', function() {
+                checkScrollPosition($(this));
+            });
+
+            // Auto-refresh every 3 seconds
+            const refreshInterval = setInterval(fetchMessages, 3000);
+
+            // Form submission
+            $('#sendMessageForm').submit(function(e) {
+                e.preventDefault();
+                
+                let formData = new FormData(this);
+                
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $('#messageText').val('');
+                        $('input[name="chat_images"]').val('');
+                        $('#messageModal').modal('hide');
+                        
+                        // Force a full reload to ensure proper ordering
+                        isFirstLoad = true;
+                        lastMessageId = 0;
                         fetchMessages();
-
-                        // Prevent JSON response from breaking page navigation
-                        history.pushState({}, '', window.location.href);
                     },
                     error: function(xhr) {
-                        console.error("Error sending message:", xhr);
+                        console.error("Error:", xhr);
+                        alert('Error sending message');
                     }
                 });
             });
 
-            let oppId = "{{ $oppId }}";
-            let invoiceId = "{{ $id }}";
+            // Close preview when clicking outside image
+            $('#image-preview-modal').click(function(e) {
+                if (e.target === this) {
+                    closeImagePreview();
+                }
+            });
 
-            // Fetch messages every 5 seconds
-            setInterval(fetchMessages, 5000);
-            $("#preloader").show();
-
-            function fetchMessages() {
-                $.ajax({
-                    url: "{{ route('message-opportunity', [$id, $oppId]) }}",
-                    type: "GET",
-                    success: function(response) {
-
-
-                        $("#chatBox").html(''); // Clear existing messages
-                        response.messages.forEach(function(message) {
-                            let isSender = message.sender_id == "{{ auth()->id() }}";
-                            let chatHtml =
-                                `<div class="chat-message ${isSender ? 'darker' : ''}">
-                                    <img src="${isSender ? 'https://i.ibb.co/k8mkCZH/free-user-icon-3296-thumb.png' : 'https://i.ibb.co/Yt7TT8T/1144760.png'}" alt="Avatar" class="${isSender ? 'right' : ''}" style="width:100%;">
-                                    <p>${message.message ? message.message : ''}</p>
-                                    <span class="${isSender ? 'time-right' : 'time-left'}" style="font-size: 0.8em;">
-                                        ${new Date(message.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} 
-                                        ${new Date(message.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                                        </span>`;
-
-
-                            if (message.image) {
-                                let files = message.image.split(',');
-                                let attachmentsHtml = '<div class="message-attachments">';
-                                files.forEach(function(file) {
-                                    let fileExtension = file.split('.').pop()
-                                        .toLowerCase();
-                                    let filePath =
-                                        `{{ asset('storage/app/public/') }}/${file}`;
-
-                                    if (['jpg', 'jpeg', 'png', 'gif'].includes(
-                                            fileExtension)) {
-                                        // attachmentsHtml +=
-                                        //     `<img src="${filePath}" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">`;
-
-                                        attachmentsHtml += `
-                                                <div style="display: flex; align-items: center; gap: 10px;">
-                                                    <img src="${filePath}" onclick="openImagePreview('${filePath}')" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">
-                                                </div>
-                                            `;
-
-                                    } else if (fileExtension === 'pdf') {
-                                        attachmentsHtml +=
-                                            `<a href="${filePath}" target="_blank">
-                                                <svg style="width:100px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                            </svg>
-                                            </a>`;
-                                    } else {
-                                        attachmentsHtml +=
-                                            `<a href="${filePath}" target="_blank">${file}</a>`; //handle other file types
-                                    }
-                                });
-                                attachmentsHtml += '</div>';
-                                chatHtml += attachmentsHtml;
-                            }
-
-                            chatHtml += '</div>'; // Closing chat-message div
-                            $("#chatBox").append(chatHtml);
-
-                        });
-
-                        // Auto-scroll to the latest message
-                        $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
-                    },
-                    error: function(xhr, status, error) {
-                        $("#preloader").hide();
-                        console.error("Error fetching messages:", error);
-                    },
-                    complete: function(xhr, status) {
-                        // Hide the preloader after the AJAX request completes (success or error)
-                        $("#preloader").hide();
-                    }
-                });
-            }
+            // Clean up interval when page unloads
+            $(window).on('beforeunload', function() {
+                clearInterval(refreshInterval);
+            });
         });
     </script>
 @endsection

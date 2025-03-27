@@ -2,417 +2,587 @@
 
 @section('content')
     <style>
-        ul {
-            list-style-type: none;
+        /* WhatsApp-inspired styling */
+        .chat-container {
+            height: 100vh;
+            background-color: #f0f2f5;
         }
 
-        .opp_list li a {
-            color: #0772b1;
+        .sidebar {
+            background-color: #ffffff;
+            border-right: 1px solid #e9edef;
+            height: 100vh;
+            padding: 0;
         }
 
-        .opp_list li a:hover {
-            color: #0772b1;
+        .chat-header {
+            background-color: #f0f2f5;
+            padding: 15px;
+            border-bottom: 1px solid #e9edef;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .darker {
-            border-color: #ccc;
-            background-color: #ddd;
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 0;
+        }
+
+        .messages-container {
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #e5ddd5;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+            background-repeat: repeat;
+            scroll-behavior: smooth;
+        }
+
+        .message-input {
+            background-color: #f0f2f5;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            border-top: 1px solid #e9edef;
         }
 
         .chat-message {
+            transition: all 0.15s ease-out;
+            max-width: 70%;
             margin-bottom: 10px;
-            padding: 10px;
-        }
-
-        .chat-message::after {
-            content: "";
+            padding: 8px 12px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
             clear: both;
-            display: table;
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .chat-message img {
+        .chat-message.sent {
+            background-color: #d9fdd3;
+            float: right;
+            border-top-right-radius: 0;
+        }
+
+        .chat-message.received {
+            background-color: #ffffff;
             float: left;
-            max-width: 100px;
-            width: 100%;
-            margin-right: 20px;
+            border-top-left-radius: 0;
+        }
+
+        .message-time {
+            font-size: 0.7em;
+            color: #667781;
+            margin-top: 5px;
+            display: block;
+            text-align: right;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
         }
 
-        .chat-message img.right {
-            float: right;
-            margin-left: 20px;
-            margin-right: 0;
+        .message-attachments {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
-        .time-right {
-            float: right;
-            color: #aaa;
+        .message-attachments img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
 
-        .time-left {
-            float: left;
-            color: #999;
+        .message-attachments img:hover {
+            transform: scale(1.05);
         }
 
-        .send-message {
-            float: right;
-
+        .pdf-attachment {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f0f2f5;
+            border-radius: 5px;
+            color: #333;
+            text-decoration: none;
         }
 
+        .pdf-attachment i {
+            margin-right: 5px;
+            color: #e74c3c;
+        }
+
+        .date-separator {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .date-separator span {
+            background-color: #e5ddd5;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            color: #667781;
+        }
+
+        /* Modal styling */
+        .message-modal .modal-content {
+            border-radius: 10px;
+        }
+
+        .message-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .message-modal .modal-footer {
+            border-top: none;
+        }
+
+        /* Loading spinner */
         .blur-loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(5px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1050;
             display: none;
-            /* Hidden by default */
         }
 
-        #image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;}div#image-preview-modal span{display:none;}@media only screen and (max-width:600px){.message-attachments{margin-top:100px}}
+        /* Image preview modal */
+        #image-preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
 
-#image-preview-modal #preview-img{width:auto;max-width:90%!important;height:auto;margin-top:10px!important;max-height:70%!important;}#image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;width:100vw!important;height:100vh!important;}
-@media only screen and (max-width:600px){#image-preview-modal{padding-top:100px}}
+        #preview-img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+        }
+
+        .close-preview {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .chat-container {
+                margin-top: 25px;
+            }
+            .sidebar {
+                display: none;
+            }
+            
+            .chat-message {
+                max-width: 85%;
+            }
+            
+            .message-attachments img {
+                max-width: 150px;
+            }
+            
+            .chat-header {
+                padding: 10px;
+            }
+        }
+
+        /* Animation for new messages */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .new-message {
+            animation: fadeIn 0.3s ease-out;
+        }
     </style>
 
-    <!-- Success Message -->
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <!-- Validation Errors -->
-    <section>
-        <div>
-            <section class="text-center bg_color login_section">
-                <h3 class="white fz36 mb-0 font_bold">{{ __('lang.contractor_area') }}</h3>
-            </section>
-            <div class="login_form p-5 font_bold c-form">
-                {{-- <form action="" method="POST">
-                  @csrf --}}
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <ul class="opp_list">
-                                <li><a href="{{ route('users-dashboard') }}">{{ __('lang.text_opportunity_list') }}</a></li>
-                                <li><a href="{{ route('invoice-list') }}">{{ __('lang.text_facturas') }}</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-8">
 
-                            <!-- Modal -->
-                            <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
-                                aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLongTitle">{{ __('lang.send_message') }}
-                                            </h5>
-                                            <button type="button" class="close" onclick="closeModal()"
-                                                data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
+    <div class="container-fluid chat-container">
+        <div class="row">
+            <!-- Sidebar - Hidden on mobile -->
+            <div class="col-md-3 d-none d-md-block sidebar">
+                <div class="chat-header">
+                    <h5 class="mb-0">{{ __('lang.contractor_area') }}</h5>
+                </div>
+                <div class="p-3">
+                    <ul class="nav flex-column opp_list">
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="{{ route('users-dashboard') }}">
+                                <i class="fas fa-list me-2"></i>
+                                {{ __('lang.text_opportunity_list') }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" href="{{ route('invoice-list') }}">
+                                <i class="fas fa-file-invoice me-2"></i>
+                                {{ __('lang.text_facturas') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
-                                            <!-- Manual Close Script -->
-                                            <script>
-                                                function closeModal() {
-                                                    $('#exampleModalLong').modal('hide');
-                                                }
-                                            </script>
-
-                                        </div>
-                                        <form id="sendMessageForm" action="{{ route('send-message-contractor') }}"
-                                            method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="modal-body">
-                                                <!-- Textarea for message input -->
-                                                <input type="hidden" name="oppId" value="{{ $oppId }}">
-                                                <input type="hidden" name="invoice_id" value="{{ $id }}">
-                                                <textarea id="messageText" name="messageText" class="form-control" rows="5"
-                                                    placeholder="Type your message here..."></textarea>
-                                                <input type="file" name="chat_images[]" multiple><br>
-                                                <small>jpg, jpeg, png, gif, pdf allowed &nbsp; max-size: 10mb</small>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                                    onclick="closeModal()">Close</button>
-                                                <!-- Send button -->
-                                                <button type="submit" class="btn btn-primary"
-                                                    id="sendMessageBtn">Send</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <h2>{{ __('lang.chat_messages') }}</h2>
-                            <h4>{{ __('lang.text_opportunity_name') }}: {{ $oppname->opportunity_name }}</h4>
-                            {{-- chat ajax --}}
-
-                            <!-- Loader -->
-                            <div id="blurLoader" class="blur-loader">
-                                <div class="text-center">
-                                    <div class="spinner-border text-primary" role="status"
-                                        style="width: 3rem; height: 3rem;"></div>
-                                    <p class="mt-2 fw-bold">Loading...</p>
-                                </div>
-                            </div>
-
-                            <div id="message-container">
-
-                            </div>
-                            {{-- chat ajax --}}
-                            <button class="send-message btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#exampleModalLong">{{ __('lang.send_message') }}</button>
-
-                            <!-- Modal for Image Popup -->
-                            <div id="imageModal"
-                                style="display:none; position:fixed; z-index:1000; left:0; top:100px; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.8);">
-                                <span style="position:absolute; right:117px; color:white; font-size:30px; cursor:pointer;"
-                                    onclick="closeImagePopup()">&times;</span>
-                                <img id="modalImage" style="margin:auto; display:block; max-width:80%; max-height:80%;">
-                            </div>
-
-                            {{-- <div id="image-preview-modal" class="modal"
-                                style="display:none;top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center;">
-                                <img id="preview-img" style="max-width:90%; max-height:90%; border-radius:8px;">
-                            </div> --}}
-
-                            <div id="image-preview-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); text-align: center;">
-                                <span>X</span>
-                                <img id="preview-img" style="max-width: 90%; margin-top: 50px;">
-                                <br>
-                                <button onclick="document.getElementById('image-preview-modal').style.display='none'" style="margin-top: 10px; padding: 5px 15px; background: white; cursor: pointer;">Close</button>
-                            </div>
-
-
-
+            <!-- Main chat area -->
+            <div class="col-md-9 col-12 chat-area">
+                <div class="chat-header d-flex align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img src="https://i.ibb.co/Yt7TT8T/1144760.png" class="chat-avatar" alt="Opportunity">
+                        <div>
+                            <h5 class="mb-0">{{ $oppname->opportunity_name }}</h5>
+                            <small class="text-muted">{{ __('lang.text_opportunity_name') }}</small>
                         </div>
                     </div>
                 </div>
-                {{-- </form> --}}
+
+                <!-- Messages container -->
+                <div id="message-container" class="messages-container"></div>
+
+                <!-- Message input -->
+                <div class="message-input">
+                    <button class="btn btn-light rounded-circle" data-bs-toggle="modal" data-bs-target="#messageModal">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="btn btn-primary rounded-pill flex-grow-1" data-bs-toggle="modal" data-bs-target="#messageModal">
+                        {{ __('lang.send_message') }}
+                    </button>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade message-modal" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">{{ __('lang.send_message') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="sendMessageForm" action="{{ route('send-message-contractor') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="oppId" value="{{ $oppId }}">
+                        <input type="hidden" name="invoice_id" value="{{ $id }}">
+                        <div class="mb-3">
+                            <textarea id="messageText" name="messageText" class="form-control" rows="5" 
+                                      placeholder="Type your message here..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="chatImages" class="form-label">Attachments</label>
+                            <input class="form-control" type="file" name="chat_images[]" id="chatImages" multiple>
+                            <div class="form-text">jpg, jpeg, png, gif, pdf allowed (max-size: 10mb)</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="sendMessageBtn">
+                            <i class="fas fa-paper-plane me-1"></i> Send
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="blurLoader" class="blur-loader">
+        <div class="text-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-2 fw-bold">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div id="image-preview-modal">
+        <span class="close-preview" onclick="closeImagePreview()">&times;</span>
+        <img id="preview-img">
+    </div>
+
     <script>
-        function openImagePopup(src) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modal.style.display = 'block';
-            modalImg.src = src;
-        }
+        // Global variables to track messages
+        let lastMessageId = 0;
+        let currentDateSeparator = '';
+        let isFirstLoad = true;
+        let scrollPosition = 0;
+        let isUserScrolledUp = false;
 
-        function closeImagePopup() {
-            const modal = document.getElementById('imageModal');
-            modal.style.display = 'none';
-        }
-
-        function openImagePreview(imageUrl) {
-                let previewModal = document.getElementById('image-preview-modal');
-                let previewImg = document.getElementById('preview-img');
-
-                previewImg.src = imageUrl;
-                previewModal.style.display = 'block';
+        // Format date as "Today", "Yesterday", or date
+        function formatDate(datetime) {
+            const date = new Date(datetime);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Yesterday';
+            } else {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             }
+        }
 
-            // Close the modal when clicking outside the image
-            window.onclick = function(event) {
-                let previewModal = document.getElementById('image-preview-modal');
-                if (event.target === previewModal) {
-                    previewModal.style.display = 'none';
-                }
-            };
-    </script>
+        // Format time as HH:MM
+        function formatTime(datetime) {
+            return new Date(datetime).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
 
-    <script>
-        $(document).ready(function() {
-
-            $('#exampleModalLong form').submit(function(event) {
-                event.preventDefault(); // Prevent default form submission
-
-                let formData = new FormData(this);
-                document.getElementById('blurLoader').style.display = 'flex';
-                $.ajax({
-                    url: "{{ route('send-message-contractor') }}",
-                    type: "POST",
-                    data: formData,
-                    processData: false, // Required for FormData
-                    contentType: false, // Required for FormData
-                    success: function(response) {
-                        // Reset the form
-                        $('#sendMessageForm')[0].reset();
-
-                        // Clear file input manually
-                        $('input[name="chat_images"]').val('');
-
-                        // Clear the emojionearea text field properly
-                        if ($("#messageText").data("emojioneArea")) {
-                            $("#messageText").data("emojioneArea").setText('');
-                        } else {
-                            $("#messageText").val(''); // Fallback for regular textarea
-                        }
-
-                        // Close modal properly
-                        $('#exampleModalLong').modal('hide');
-
-                        // Remove modal backdrop if necessary
-                        // $('.modal-backdrop').remove();
-                        $('body').removeClass('modal-open');
-
-
-                        // Optionally update chat messages or reload content
-                        // Ensure loader hides after messages are fetched
-                        fetchMessages().then(() => {
-                            document.getElementById('blurLoader').style.display =
-                                'none';
-                        }).catch(err => {
-                            console.error("Error fetching messages:", err);
-                            document.getElementById('blurLoader').style.display =
-                                'none'; // Hide loader even if error occurs
-                        });
-
-
-
-                        // Prevent JSON response from affecting navigation
-                        history.pushState({}, '', window.location.href);
-                    },
-                    error: function(xhr) {
-                        console.error("Error sending message:", xhr);
-                        document.getElementById('blurLoader').style.display = 'none';
+        // Create a message element
+        function createMessageElement(message) {
+            const isSender = (message.sender_id == {{ Auth::id() }});
+            const messageClass = isSender ? 'chat-message sent' : 'chat-message received';
+            const avatar = isSender ? 
+                'https://i.ibb.co/k8mkCZH/free-user-icon-3296-thumb.png' : 
+                'https://i.ibb.co/Yt7TT8T/1144760.png';
+            
+            let messageHtml = `
+                <div class="${messageClass} new-message" data-message-id="${message.id}">
+                    <p>${message.message || ''}</p>
+                    <span class="message-time">${formatTime(message.created_at)}</span>
+            `;
+            
+            // Handle attachments
+            if (message.image) {
+                messageHtml += '<div class="message-attachments">';
+                message.image.split(',').forEach(function(file) {
+                    const filePath = `{{ url('storage/app/public/') }}/${file}`;
+                    const extension = file.split('.').pop().toLowerCase();
+                    
+                    if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+                        messageHtml += `
+                            <img src="${filePath}" 
+                                 onclick="openImagePreview('${filePath}')" 
+                                 alt="Attachment">
+                        `;
+                    } else if (extension === 'pdf') {
+                        messageHtml += `
+                            <a href="${filePath}" target="_blank" class="pdf-attachment">
+                                <i class="fas fa-file-pdf"></i> ${file.split('/').pop()}
+                            </a>
+                        `;
                     }
                 });
+                messageHtml += '</div>';
+            }
+            
+            messageHtml += '</div>';
+            return messageHtml;
+        }
 
-                setTimeout(function() {
-                    document.getElementById('blurLoader').style.display =
-                        'none';
-                }, 4000); // Hides the loader after 2 seconds
+        // Add date separator if needed
+        function addDateSeparator(dateStr, container) {
+            if (dateStr !== currentDateSeparator) {
+                container.append(`
+                    <div class="date-separator">
+                        <span>${dateStr}</span>
+                    </div>
+                `);
+                currentDateSeparator = dateStr;
+            }
+        }
+
+        // Check if user has scrolled up
+        function checkScrollPosition(container) {
+            const threshold = 100; // pixels from bottom
+            const position = container.scrollTop() + container.innerHeight();
+            const height = container[0].scrollHeight;
+            isUserScrolledUp = position < height - threshold;
+        }
+
+        // Load messages efficiently
+        function loadMessages() {
+            $.ajax({
+                url: "{{ route('contractor-message-opportunity', ['id' => $id, 'oppId' => $oppId]) }}",
+                type: "GET",
+                data: { last_message_id: lastMessageId },
+                success: function(response) {
+                    if (response.messages && response.messages.length > 0) {
+                        const messageContainer = $("#message-container");
+                        
+                        // Store scroll position before updates
+                        scrollPosition = messageContainer.scrollTop();
+                        
+                        // Check if user has scrolled up
+                        checkScrollPosition(messageContainer);
+                        
+                        // On first load, add all messages
+                        if (isFirstLoad) {
+                            messageContainer.empty();
+                            response.messages.forEach(function(message) {
+                                const messageDate = formatDate(message.created_at);
+                                addDateSeparator(messageDate, messageContainer);
+                                messageContainer.append(createMessageElement(message));
+                                lastMessageId = Math.max(lastMessageId, message.id);
+                            });
+                            isFirstLoad = false;
+                            messageContainer.scrollTop(messageContainer[0].scrollHeight);
+                        } 
+                        // On subsequent loads, only add new messages
+                        else {
+                            let newMessages = [];
+                            response.messages.forEach(function(message) {
+                                if (message.id > lastMessageId) {
+                                    const messageDate = formatDate(message.created_at);
+                                    addDateSeparator(messageDate, messageContainer);
+                                    messageContainer.append(createMessageElement(message));
+                                    newMessages.push(message.id);
+                                }
+                            });
+                            
+                            // Update last message ID
+                            if (newMessages.length > 0) {
+                                lastMessageId = Math.max(...newMessages);
+                                
+                                // Only auto-scroll if user hasn't scrolled up
+                                if (!isUserScrolledUp) {
+                                    messageContainer.scrollTop(messageContainer[0].scrollHeight);
+                                }
+                            }
+                        }
+                    } else if (isFirstLoad) {
+                        $('#message-container').html('<div class="text-center py-3 text-muted">No messages yet</div>');
+                        isFirstLoad = false;
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error loading messages:", xhr);
+                    if (isFirstLoad) {
+                        $('#message-container').html('<div class="text-center py-3 text-danger">Error loading messages</div>');
+                        isFirstLoad = false;
+                    }
+                }
+            });
+        }
+
+        // Image preview functions
+        function openImagePreview(src) {
+            const previewModal = document.getElementById('image-preview-modal');
+            const previewImg = document.getElementById('preview-img');
+            previewImg.src = src;
+            previewModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImagePreview() {
+            document.getElementById('image-preview-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Form submission
+        $(document).ready(function() {
+            // Initial load
+            loadMessages();
+            
+            // Set up scroll event listener
+            $('#message-container').on('scroll', function() {
+                checkScrollPosition($(this));
             });
 
+            // Auto-refresh every 3 seconds
+            const refreshInterval = setInterval(loadMessages, 3000);
 
-            let isLoading = false; // Prevent multiple requests
-
-            function formatTime(datetime) {
-                let date = new Date(datetime);
-                return date.toLocaleTimeString('es-ES', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                });
-            }
-
-            function loadMessages() {
-                if (isLoading) return; // Prevent overlapping requests
-                isLoading = true;
-
-
+            // Form submission
+            $('#sendMessageForm').submit(function(e) {
+                e.preventDefault();
+                $('#blurLoader').show();
+                
+                let formData = new FormData(this);
+                
                 $.ajax({
-                    url: "{{ route('contractor-message-opportunity', ['id' => ':id', 'oppId' => ':oppId']) }}"
-                        .replace(':id', {{ $id }}).replace(':oppId', {{ $oppId }}),
-                    type: "GET",
-                    dataType: "json",
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
-                        if (response.messages) {
-                            let messageContainer = $("#message-container");
-
-                            response.messages.forEach(function(message) {
-                                let isSender = (message.sender_id == {{ Auth::id() }});
-                                let formattedTime = formatTime(message.created_at);
-
-                                let messageClass = isSender ? 'chat-message darker' :
-                                    'chat-message';
-                                let avatar = isSender ?
-                                    'https://i.ibb.co/k8mkCZH/free-user-icon-3296-thumb.png' :
-                                    'https://i.ibb.co/Yt7TT8T/1144760.png';
-
-                                // Check if message already exists
-                                if (messageContainer.find(`[data-message-id="${message.id}"]`)
-                                    .length > 0) {
-                                    return; // Skip duplicates
-                                }
-
-                                let messageHtml = `
-                            <div class="${messageClass}" data-message-id="${message.id}">
-                                <img src="${avatar}" alt="Avatar" class="${isSender ? 'right' : ''}" style="width:100%;">
-                                <p>${message.message ? message.message : ''}</p>
-                                <span class="${isSender ? 'time-right' : 'time-left'}" style="font-size: 0.8em;">
-                                        ${new Date(message.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} 
-                                        ${new Date(message.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                                        </span>
-                        `;
-
-                                if (message.image) {
-                                    let images = message.image.split(',');
-                                    messageHtml += '<div class="message-attachments">';
-                                    images.forEach(function(file) {
-                                        let fileExtension = file.split('.').pop()
-                                            .toLowerCase();
-                                        let filePath =
-                                            `{{ url('storage/app/public/') }}/${file}`;
-
-                                        if (['jpg', 'jpeg', 'png', 'gif'].includes(
-                                                fileExtension)) {
-                                            // messageHtml +=
-                                            //     `<img src="${filePath}" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">`;
-
-                                            messageHtml += `
-                                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                                        <img src="${filePath}" onclick="openImagePreview('${filePath}')" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">
-                                                    </div>
-                                                `;
-
-                                        } else if (fileExtension === 'pdf') {
-                                            messageHtml += `
-                                        <a href="${filePath}" target="_blank" class="pdf-link">
-                                            <svg style="width:100px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                            </svg>
-                                        </a>`;
-                                        } else {
-                                            messageHtml +=
-                                                `<a href="${filePath}" target="_blank">${file}</a>`;
-                                        }
-                                    });
-                                    messageHtml += '</div>';
-                                }
-
-                                messageHtml += `</div>`; // Closing chat-message div
-
-                                messageContainer.append(messageHtml);
-                            });
-
-                            // Scroll to the bottom after adding new messages
-                            messageContainer.scrollTop(messageContainer.prop("scrollHeight"));
-
-
-                        }
-
+                        $('#messageText').val('');
+                        $('input[name="chat_images"]').val('');
+                        $('#messageModal').modal('hide');
+                        
+                        // Force a full reload to ensure proper ordering
+                        isFirstLoad = true;
+                        lastMessageId = 0;
+                        loadMessages();
                     },
                     error: function(xhr) {
-                        console.error("Error fetching messages:", xhr);
+                        console.error("Error:", xhr);
+                        alert('Error sending message');
                     },
                     complete: function() {
-                        isLoading = false; // Reset flag when request completes
+                        $('#blurLoader').hide();
                     }
                 });
-            }
+            });
 
-            // Load messages every 5 seconds
-            setInterval(loadMessages, 5000);
+            // Close preview when clicking outside image
+            $('#image-preview-modal').click(function(e) {
+                if (e.target === this) {
+                    closeImagePreview();
+                }
+            });
 
-            // Function to open a preview modal
-            
-
-            // Initial load
-
-            loadMessages();
+            // Clean up interval when page unloads
+            $(window).on('beforeunload', function() {
+                clearInterval(refreshInterval);
+            });
         });
     </script>
 @endsection

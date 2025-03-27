@@ -112,11 +112,8 @@
                                                             <input name="Cifrado" type="hidden" value="SHA2"
                                                                 id="Cifrado-{{ $opp->id }}">
 
-                                                            <input name="Num_operacion" class="form-control" type="hidden"
-                                                                value="{{ $opp->id }}"
-                                                                id="Num_operacion-{{ $opp->id }}">
-                                                            <!-- <input name="Importe" class="form-control" type="hidden"
-                                                                        value="{{ $opp->amount }}" id="Importe-{{ $opp->id }}"> -->
+                                                                <input name="Num_operacion" type="hidden"
+                                                                value="{{ $opp->id }}-{{ time() }}">
 
 
 

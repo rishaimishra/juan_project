@@ -187,40 +187,42 @@
                             </div>
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
-                                    {{--  <label class="col-form-label input_color fz16 pt-3">{{__('lang.text_estimated_datetime')}}</label>  --}}
                                     <label
                                         class="col-form-label input_color fz16 pt-3">{{ __('lang.estimate_start_project') }}</label>
-                                    <!-- <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" name="date"
-                                        type="datetime-local" placeholder="Enter City" /> -->
-
-                                        <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" 
-       name="date" type="datetime-local" 
-       placeholder="Enter Date" id="datetimeInput" />
-
-<script>
-window.onload = () => {
-  const datetimeInput = document.getElementById('datetimeInput');
-  const now = new Date();
-  
-  // Manually format the current date and time for datetime-local (YYYY-MM-DDTHH:MM)
-  const pad = (num) => String(num).padStart(2, '0');
-  const formattedDateTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
-  datetimeInput.min = formattedDateTime;
-
-  // Validate user input on change
-  datetimeInput.addEventListener('change', (event) => {
-    const selectedDate = new Date(event.target.value);
-    if (selectedDate < now) {
-      alert('You cannot select a past date and time.');
-      event.target.value = ''; // Clear the input
-    }
-  });
-};
-</script>
-
+                                    <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" name="date"
+                                        type="datetime-local" placeholder="Enter Date" id="datetimeInput"
+                                        min="{{ now()->format('Y-m-d\TH:i') }}" {{-- Server-side min date (today) --}} />
                                 </div>
                             </div>
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const datetimeInput = document.getElementById('datetimeInput');
+                                    const now = new Date();
+
+                                    // Set min to current date/time (client-side)
+                                    const year = now.getFullYear();
+                                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                                    const day = String(now.getDate()).padStart(2, '0');
+                                    const hours = String(now.getHours()).padStart(2, '0');
+                                    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+                                    const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                                    datetimeInput.min = minDateTime;
+
+                                    // Client-side validation (only needed if browser doesn't enforce min)
+                                    datetimeInput.addEventListener('change', function() {
+                                        const selectedDate = new Date(this.value);
+                                        const today = new Date();
+
+                                        // Allow same day (ignore time comparison)
+                                        if (selectedDate < today && selectedDate.toDateString() !== today.toDateString()) {
+                                            alert('You cannot select a past date.');
+                                            this.value = '';
+                                        }
+                                    });
+                                });
+                            </script>
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
                                     <label

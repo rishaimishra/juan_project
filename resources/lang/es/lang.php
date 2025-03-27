@@ -10,6 +10,7 @@ return [
 'addr_two' => 'Rua Camouco, nº 2, Portal 2, Ático J',
 'addr_three' => 'Ribeira - A Coruña',
 'addr_four' => '15960 - SPAIN',
+'footer_addr'=>'64.6 Energy Efficiency SL empresa registrada en Registro Mercantil de Santiago de Compostela Tomo 303 Libro 0 Folio 67 Hoja SC-48855 Inscrip 1',
 
 // ,MENU
 'show_interest' => 'Gracias por mostrar interés con respecto a esta oportunidad.',

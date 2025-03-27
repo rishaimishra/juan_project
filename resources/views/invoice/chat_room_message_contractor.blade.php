@@ -74,6 +74,11 @@
             display: none;
             /* Hidden by default */
         }
+
+        #image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;}div#image-preview-modal span{display:none;}@media only screen and (max-width:600px){.message-attachments{margin-top:100px}}
+
+#image-preview-modal #preview-img{width:auto;max-width:90%!important;height:auto;margin-top:10px!important;max-height:70%!important;}#image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;width:100vw!important;height:100vh!important;}
+@media only screen and (max-width:600px){#image-preview-modal{padding-top:100px}}
     </style>
 
     <!-- Success Message -->
@@ -132,8 +137,8 @@
                                                 <input type="hidden" name="invoice_id" value="{{ $id }}">
                                                 <textarea id="messageText" name="messageText" class="form-control" rows="5"
                                                     placeholder="Type your message here..."></textarea>
-                                                <input type="file" name="chat_images[]" multiple>
-                                                <small>jpg, jpeg, png, gif, pdf allowed</small>
+                                                <input type="file" name="chat_images[]" multiple><br>
+                                                <small>jpg, jpeg, png, gif, pdf allowed &nbsp; max-size: 10mb</small>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal"
@@ -175,6 +180,21 @@
                                     onclick="closeImagePopup()">&times;</span>
                                 <img id="modalImage" style="margin:auto; display:block; max-width:80%; max-height:80%;">
                             </div>
+
+                            {{-- <div id="image-preview-modal" class="modal"
+                                style="display:none;top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center;">
+                                <img id="preview-img" style="max-width:90%; max-height:90%; border-radius:8px;">
+                            </div> --}}
+
+                            <div id="image-preview-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); text-align: center;">
+                                <span>X</span>
+                                <img id="preview-img" style="max-width: 90%; margin-top: 50px;">
+                                <br>
+                                <button onclick="document.getElementById('image-preview-modal').style.display='none'" style="margin-top: 10px; padding: 5px 15px; background: white; cursor: pointer;">Close</button>
+                            </div>
+
+
+
                         </div>
                     </div>
                 </div>
@@ -194,6 +214,22 @@
             const modal = document.getElementById('imageModal');
             modal.style.display = 'none';
         }
+
+        function openImagePreview(imageUrl) {
+                let previewModal = document.getElementById('image-preview-modal');
+                let previewImg = document.getElementById('preview-img');
+
+                previewImg.src = imageUrl;
+                previewModal.style.display = 'block';
+            }
+
+            // Close the modal when clicking outside the image
+            window.onclick = function(event) {
+                let previewModal = document.getElementById('image-preview-modal');
+                if (event.target === previewModal) {
+                    previewModal.style.display = 'none';
+                }
+            };
     </script>
 
     <script>
@@ -242,7 +278,7 @@
                             document.getElementById('blurLoader').style.display =
                                 'none'; // Hide loader even if error occurs
                         });
-                       
+
 
 
                         // Prevent JSON response from affecting navigation
@@ -255,9 +291,9 @@
                 });
 
                 setTimeout(function() {
-                            document.getElementById('blurLoader').style.display =
-                            'none';
-                        }, 4000); // Hides the loader after 2 seconds
+                    document.getElementById('blurLoader').style.display =
+                        'none';
+                }, 4000); // Hides the loader after 2 seconds
             });
 
 
@@ -323,8 +359,15 @@
 
                                         if (['jpg', 'jpeg', 'png', 'gif'].includes(
                                                 fileExtension)) {
-                                            messageHtml +=
-                                                `<img src="${filePath}" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">`;
+                                            // messageHtml +=
+                                            //     `<img src="${filePath}" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">`;
+
+                                            messageHtml += `
+                                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                                        <img src="${filePath}" onclick="openImagePreview('${filePath}')" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">
+                                                    </div>
+                                                `;
+
                                         } else if (fileExtension === 'pdf') {
                                             messageHtml += `
                                         <a href="${filePath}" target="_blank" class="pdf-link">
@@ -347,6 +390,8 @@
 
                             // Scroll to the bottom after adding new messages
                             messageContainer.scrollTop(messageContainer.prop("scrollHeight"));
+
+
                         }
 
                     },
@@ -361,6 +406,9 @@
 
             // Load messages every 5 seconds
             setInterval(loadMessages, 5000);
+
+            // Function to open a preview modal
+            
 
             // Initial load
 

@@ -19,8 +19,11 @@ use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class LeadsController extends Controller
 {
-    public function index(){
-         $leads = Leads::all();
-        return view('Leads.index',compact('leads'));
+    public function index()
+    {
+        $leads = Leads::orderByDesc('id')->get();
+
+        return view('Leads.index', compact('leads'));
     }
+
 }

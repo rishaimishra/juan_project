@@ -3,6 +3,7 @@
 return [
 'addr_one' => '64.6 Energy Efficiency S.L.',
 'addr_two' => 'Camouco Street, No. 2, Portal 2, Attic J',
+'footer_addr'=>'64.6 Energy Efficiency SL, a company registered in the Mercantile Registry of Santiago de Compostela, Volume 303, Book 0, Page 67, Sheet SC-48855, Entry 1',
 'addr_three' => 'Ribeira - A Coruña',
 'addr_four' => '15960 - SPAIN',
     // ,,, BIDINLINE ,,

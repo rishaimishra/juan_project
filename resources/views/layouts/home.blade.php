@@ -25,6 +25,9 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PL6B14B177"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        section+div.p-5 { padding: 20px 10px !important; }
+    </style>
     <script>
         window.dataLayer = window.dataLayer || [];
 

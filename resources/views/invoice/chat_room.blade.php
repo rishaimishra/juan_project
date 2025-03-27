@@ -11,6 +11,7 @@
     .opp_list li a:hover{
         color: #0772b1;
     }
+    table.table {     display: block;     overflow-x: auto;     white-space: nowrap; }
 </style>
   <!-- Success Message -->
   @if (session('success'))

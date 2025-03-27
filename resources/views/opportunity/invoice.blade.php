@@ -203,7 +203,7 @@
         </tr>
     </table>
 
-    <p style="margin-top: 50%">64.6 Energy Efficiency SL empresa registrada en Registro Mercantil de Santiago de Compostela Tomo 303 Libro 0 Folio 67 Hoja SC-48855 Inscrip 1.</p>
+    <p style="margin-top: 50%">{{ __('lang.footer_addr') }}</p>
 
 </body>
 

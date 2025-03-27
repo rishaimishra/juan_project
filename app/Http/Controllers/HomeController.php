@@ -24,9 +24,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-       $contractors = Contractor::with(['countryContractor', 'stateContractor'])->get();
-        return view('contractor_dashboard',compact('contractors'));
+        $contractors = Contractor::with(['countryContractor', 'stateContractor'])
+                                ->orderByDesc('id')
+                                ->get();
+    
+        return view('contractor_dashboard', compact('contractors'));
     }
+    
 
     public function delete_contractor($id){
         // return $id;

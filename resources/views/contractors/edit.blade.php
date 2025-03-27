@@ -341,15 +341,15 @@
                         @if ($opportunity->est_amount == 1)
                             {{-- <p>{{ __('lang.show_interest') }}</p> --}}
                             {{-- <p>{{ __('lang.generate_invoice_confirmation') }} €10 {{ __('lang.like_to_proceed') }}?</p> --}}
-                            <p>{{ __('lang.show_interest') }} €3 {{ __('lang.like_to_proceed') }}?</p>
+                            <p>{{ __('lang.show_interest') }} €3.00. {{ __('lang.like_to_proceed') }}?</p>
                         @endif
                         @if ($opportunity->est_amount == 2)
                             {{-- <p>{{ __('lang.show_interest') }}</p> --}}
-                            <p>{{ __('lang.show_interest') }} €15 {{ __('lang.like_to_proceed') }}?</p>
+                            <p>{{ __('lang.show_interest') }} €15.00. {{ __('lang.like_to_proceed') }}?</p>
                         @endif
                         @if ($opportunity->est_amount == 3)
                             {{-- <p>{{ __('lang.show_interest') }}</p> --}}
-                            <p>{{ __('lang.show_interest') }} €20 {{ __('lang.like_to_proceed') }}?</p>
+                            <p>{{ __('lang.show_interest') }} €20.00. {{ __('lang.like_to_proceed') }}?</p>
                         @endif
                     </div>
                     <div class="modal-footer">

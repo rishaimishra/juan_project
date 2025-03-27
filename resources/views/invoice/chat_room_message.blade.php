@@ -76,6 +76,11 @@
             z-index: 9999;
             display: none;
         }
+
+        #image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;}div#image-preview-modal span{display:none;}@media only screen and (max-width:600px){.message-attachments{margin-top:100px}}
+
+        #image-preview-modal #preview-img{width:auto;max-width:90%!important;height:auto;margin-top:10px!important;max-height:70%!important;}#image-preview-modal{position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%);z-index:999999999999;width:100vw!important;height:100vh!important;}
+        @media only screen and (max-width:600px){#image-preview-modal{padding-top:100px}}
     </style>
 
     <!-- Success Message -->
@@ -110,8 +115,7 @@
                             {{-- <button class="send-message btn btn-primary" data-toggle="modal"
                                 data-target="#exampleModalLong">{{ __('lang.send_message') }}</button> --}}
 
-                            <button class="send-message btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#exampleModalLong">{{ __('lang.send_message') }}</button>
+
 
                             <!-- Modal -->
                             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
@@ -135,6 +139,7 @@
                                                         placeholder="Type your message here..."></textarea>
                                                 </div>
                                                 <input type="file" name="chat_images[]" multiple>
+                                                <small>jpg, jpeg, png, gif, pdf allowed &nbsp; max-size: 10mb</small>
                                                 {{-- <span class="text-danger">{{ $errors->first('chat_images') }}</span> --}}
                                             </div>
                                             <div class="modal-footer">
@@ -162,6 +167,17 @@
                                 </div>
                             </div>
 
+                            <button class="send-message btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#exampleModalLong">{{ __('lang.send_message') }}</button>
+
+                                <div id="image-preview-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); text-align: center;">
+                                    <span>X</span>
+                                    <img id="preview-img" style="max-width: 90%; margin-top: 50px;">
+                                    <br>
+                                    <button onclick="document.getElementById('image-preview-modal').style.display='none'" style="margin-top: 10px; padding: 5px 15px; background: white; cursor: pointer;">Close</button>
+                                </div>
+                                
+
 
                         </div>
                     </div>
@@ -170,6 +186,20 @@
             </div>
         </div>
     </section>
+
+    <script>
+        function openImagePreview(imageUrl) {
+            let previewModal = document.getElementById('image-preview-modal');
+            let previewImg = document.getElementById('preview-img');
+
+            if (previewModal && previewImg) {
+                previewImg.src = imageUrl;
+                previewModal.style.display = 'block';
+            } else {
+                console.error("Modal or image element not found!");
+            }
+        }
+    </script>
 
     <script>
         $(document).ready(function() {
@@ -251,8 +281,15 @@
 
                                     if (['jpg', 'jpeg', 'png', 'gif'].includes(
                                             fileExtension)) {
-                                        attachmentsHtml +=
-                                            `<img src="${filePath}" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">`;
+                                        // attachmentsHtml +=
+                                        //     `<img src="${filePath}" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">`;
+
+                                        attachmentsHtml += `
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <img src="${filePath}" onclick="openImagePreview('${filePath}')" alt="Chat Image" style="width: 100px; height: 100px; margin: 5px;">
+                                                </div>
+                                            `;
+
                                     } else if (fileExtension === 'pdf') {
                                         attachmentsHtml +=
                                             `<a href="${filePath}" target="_blank">

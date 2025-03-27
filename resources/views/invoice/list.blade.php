@@ -70,6 +70,9 @@
                                                             $pay_amount = 20;
                                                         }
 
+                                                        $randomSuffix = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                                                        $numOperacion = $opp->id . $randomSuffix;
+
                                                         // Debug output - view page source to see this
                                                         echo "<!-- DEBUG: opportunity_id: {$opp->opportunity_id}, est_amount: {$amount}, pay_amount: {$pay_amount} -->";
                                                     @endphp
@@ -95,8 +98,12 @@
                                                                 value="{{ route('invoice-list') }}">
                                                             <input name="Firma" type="hidden" value="">
                                                             <input name="Cifrado" type="hidden" value="SHA2">
-                                                            <input name="Num_operacion" type="hidden"
-                                                                value="{{ str_pad($opp->id, 4, '0', STR_PAD_LEFT) }}">
+                                                            {{-- <input name="Num_operacion" type="hidden"
+                                                                value="{{ str_pad($opp->id, 4, '0', STR_PAD_LEFT) }}"> --}}
+
+                                                                <input name="Num_operacion" type="hidden" value="{{ $numOperacion }}">
+
+
                                                             <input name="Importe" type="hidden"
                                                                 value="{{ round($pay_amount, 2) * 100 }}">
                                                             <input name="TipoMoneda" type="hidden" value="978">
@@ -138,7 +145,8 @@
                 var keyEncryption = $button.data("key-encryption");
 
                 // Create a unique operation number (4 digits)
-                var numOperacion = String(id).padStart(4, '0');
+                // var numOperacion = String(id).padStart(4, '0');
+                var numOperacion = $("input[name='Num_operacion']", "#form-" + id).val();
 
                 // Gather all form data including the encryption key
                 var formData = {
@@ -160,7 +168,7 @@
                 // Disable button to prevent multiple clicks
                 $button.prop('disabled', true).html(
                     '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing'
-                    );
+                );
 
                 $.ajax({
                     type: "POST",

@@ -101,7 +101,8 @@
                                                             {{-- <input name="Num_operacion" type="hidden"
                                                                 value="{{ str_pad($opp->id, 4, '0', STR_PAD_LEFT) }}"> --}}
 
-                                                                <input name="Num_operacion" type="hidden" value="{{ $numOperacion }}">
+                                                            <input name="Num_operacion" type="hidden"
+                                                                value="{{ $numOperacion }}">
 
 
                                                             <input name="Importe" type="hidden"
@@ -121,9 +122,34 @@
                                             <td>{{ $pay_amount }} EURO</td>
                         </div>
                     @else
-                        <!-- Paid invoice options remain unchanged -->
+                        @if ($todayMessages->isNotEmpty())
+                            <div class="new-message-icon">
+                                {{-- <svg class="animated-arrow" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="red">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                </svg> --}}
+                            </div>
+                        @endif
+
+                        @if ($opp->opportunity->admin_bit !== 3)
+                            <a href="{{ asset('public/' . $opp->invoice_path) }}" download class="me-2">
+                                <svg style="width:30px;" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                </svg>
+                            </a>
+                            <a href="{{ route('contractor-message-opportunity', ['id' => $opp->id, 'oppId' => $opp->opportunity_id]) }}"
+                                class="btn btn-primary btn-sm">
+                                {{ __('lang.message') }}
+                            </a>
+                        @else
+                            Window Closed
+                        @endif
                         @endif
                         </td>
+                        <td>{{ isset($pay_amount) ? $pay_amount . ' EURO' : 'N/A' }}</td>
+
                         </tr>
                         @endforeach
                         </tbody>

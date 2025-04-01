@@ -490,6 +490,16 @@ class ContractorController extends Controller
         return view('users.list', compact('users'));
     }
 
+    public function deleteUser($id){
+        $user = User::find($id);
+        if ($user) {
+            $user->delete();
+            return redirect()->back()->with('success', 'User deleted successfully.');
+        } else {
+            return redirect()->back()->with('error', 'User not found.');
+        }
+    }
+
 
     public function get_contractor_email()
     {

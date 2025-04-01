@@ -53,7 +53,13 @@ class OpportunityController extends Controller
         $opportunity->city = $request->city;
         $opportunity->project_type = json_encode($request->company_type);
         $opportunity->est_amount = $request->estimated_amount;
-        $opportunity->est_time = $request->date;
+        // $opportunity->est_time = $request->date;
+        // dd($request->date);
+       // Handle date conversion
+       if (!empty($request->date)) {
+        $opportunity->est_time = Carbon::parse($request->date)->format('Y-m-d\TH:i');
+    }
+
         $opportunity->best_time = $request->time;
         $opportunity->detail_description = $request->description;
         $opportunity->purchase_finalize = $request->finalize_by;

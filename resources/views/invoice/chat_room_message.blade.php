@@ -181,7 +181,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -202,7 +202,7 @@
             color: white;
             font-size: 30px;
             cursor: pointer;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -216,18 +216,19 @@
             .chat-container {
                 margin-top: 25px;
             }
+
             .sidebar {
                 display: none;
             }
-            
+
             .chat-message {
                 max-width: 85%;
             }
-            
+
             .message-attachments img {
                 max-width: 150px;
             }
-            
+
             .chat-header {
                 padding: 10px;
             }
@@ -235,8 +236,15 @@
 
         /* Animation for new messages */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .new-message {
@@ -302,7 +310,8 @@
                     <button class="btn btn-light rounded-circle" data-bs-toggle="modal" data-bs-target="#messageModal">
                         <i class="fas fa-paperclip"></i>
                     </button>
-                    <button class="btn btn-primary rounded-pill flex-grow-1" data-bs-toggle="modal" data-bs-target="#messageModal">
+                    <button class="btn btn-primary rounded-pill flex-grow-1" data-bs-toggle="modal"
+                        data-bs-target="#messageModal">
                         {{ __('lang.send_message') }}
                     </button>
                 </div>
@@ -311,30 +320,35 @@
     </div>
 
     <!-- Message Modal -->
-    <div class="modal fade message-modal" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+
+    <div class="modal fade message-modal" id="messageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="messageModalLabel">{{ __('lang.send_message') }}</h5>
+                    <h5 class="modal-title">{{ __('lang.send_message') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="sendMessageForm" action="{{ route('send-message') }}" method="POST" enctype="multipart/form-data">
+                <!-- Add ID to the form and change button type -->
+                <form id="sendMessageForm" action="{{ route('send-message') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" name="oppId" value="{{ $oppId }}">
                         <input type="hidden" name="invoice_id" value="{{ $id }}">
                         <div class="mb-3">
-                            <textarea id="messageText" name="messageText" class="form-control" rows="5" 
-                                      placeholder="Type your message here..."></textarea>
+                            <textarea id="messageText" name="messageText" class="form-control" rows="5"
+                                placeholder="Type your message here..."></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="chatImages" class="form-label">Attachments</label>
                             <input class="form-control" type="file" name="chat_images[]" id="chatImages" multiple>
                             <div class="form-text">jpg, jpeg, png, gif, pdf allowed (max-size: 10mb)</div>
+                            <div id="file-preview" class="mt-2"></div> <!-- File preview container -->
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <!-- Change to button type="submit" -->
                         <button type="submit" class="btn btn-primary" id="sendMessageBtn">
                             <i class="fas fa-paper-plane me-1"></i> Send
                         </button>
@@ -364,13 +378,16 @@
             const today = new Date();
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
-            
+
             if (date.toDateString() === today.toDateString()) {
                 return 'Today';
             } else if (date.toDateString() === yesterday.toDateString()) {
                 return 'Yesterday';
             } else {
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
             }
         }
 
@@ -387,23 +404,23 @@
         function createMessageElement(message) {
             const isSender = (message.sender_id == {{ Auth::id() }});
             const messageClass = isSender ? 'chat-message sent' : 'chat-message received';
-            const avatar = isSender ? 
-                'https://i.ibb.co/k8mkCZH/free-user-icon-3296-thumb.png' : 
+            const avatar = isSender ?
+                'https://i.ibb.co/k8mkCZH/free-user-icon-3296-thumb.png' :
                 'https://i.ibb.co/Yt7TT8T/1144760.png';
-            
+
             let messageHtml = `
                 <div class="${messageClass} new-message" data-message-id="${message.id}">
                     <p>${message.message || ''}</p>
                     <span class="message-time">${formatTime(message.created_at)}</span>
             `;
-            
+
             // Handle attachments
             if (message.image) {
                 messageHtml += '<div class="message-attachments">';
                 message.image.split(',').forEach(function(file) {
                     const filePath = `{{ asset('storage/app/public/') }}/${file}`;
                     const extension = file.split('.').pop().toLowerCase();
-                    
+
                     if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
                         messageHtml += `
                             <img src="${filePath}" 
@@ -413,14 +430,14 @@
                     } else if (extension === 'pdf') {
                         messageHtml += `
                             <a href="${filePath}" target="_blank" class="pdf-attachment">
-                                <i class="fas fa-file-pdf"></i> ${file.split('/').pop()}
+                                 <i class="fas fa-file-pdf fa-2x"></i> 
                             </a>
                         `;
                     }
                 });
                 messageHtml += '</div>';
             }
-            
+
             messageHtml += '</div>';
             return messageHtml;
         }
@@ -450,17 +467,19 @@
             $.ajax({
                 url: "{{ route('message-opportunity', [$id, $oppId]) }}",
                 type: "GET",
-                data: { last_message_id: lastMessageId },
+                data: {
+                    last_message_id: lastMessageId
+                },
                 success: function(response) {
                     if (response.messages && response.messages.length > 0) {
                         const messageContainer = $("#message-container");
-                        
+
                         // Store scroll position before updates
                         scrollPosition = messageContainer.scrollTop();
-                        
+
                         // Check if user has scrolled up
                         checkScrollPosition(messageContainer);
-                        
+
                         // On first load, add all messages
                         if (isFirstLoad) {
                             messageContainer.empty();
@@ -472,7 +491,7 @@
                             });
                             isFirstLoad = false;
                             messageContainer.scrollTop(messageContainer[0].scrollHeight);
-                        } 
+                        }
                         // On subsequent loads, only add new messages
                         else {
                             let newMessages = [];
@@ -484,11 +503,11 @@
                                     newMessages.push(message.id);
                                 }
                             });
-                            
+
                             // Update last message ID
                             if (newMessages.length > 0) {
                                 lastMessageId = Math.max(...newMessages);
-                                
+
                                 // Only auto-scroll if user hasn't scrolled up
                                 if (!isUserScrolledUp) {
                                     messageContainer.scrollTop(messageContainer[0].scrollHeight);
@@ -496,14 +515,16 @@
                             }
                         }
                     } else if (isFirstLoad) {
-                        $('#message-container').html('<div class="text-center py-3 text-muted">No messages yet</div>');
+                        $('#message-container').html(
+                            '<div class="text-center py-3 text-muted">No messages yet</div>');
                         isFirstLoad = false;
                     }
                 },
                 error: function(xhr) {
                     console.error("Error loading messages:", xhr);
                     if (isFirstLoad) {
-                        $('#message-container').html('<div class="text-center py-3 text-danger">Error loading messages</div>');
+                        $('#message-container').html(
+                            '<div class="text-center py-3 text-danger">Error loading messages</div>');
                         isFirstLoad = false;
                     }
                 },
@@ -532,7 +553,7 @@
         $(document).ready(function() {
             // Initial load
             fetchMessages();
-            
+
             // Set up scroll event listener
             $('#message-container').on('scroll', function() {
                 checkScrollPosition($(this));
@@ -541,24 +562,48 @@
             // Auto-refresh every 3 seconds
             const refreshInterval = setInterval(fetchMessages, 3000);
 
+            // Clear form when modal is closed
+            $('#messageModal').on('hidden.bs.modal', function() {
+                clearMessageForm();
+            });
+
             // Form submission
             $('#sendMessageForm').submit(function(e) {
                 e.preventDefault();
-                
+
                 let formData = new FormData(this);
-                
+
                 $.ajax({
                     url: $(this).attr('action'),
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
+                    beforeSend: function() {
+                        $('#sendMessageBtn').prop('disabled', true).html(
+                            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...'
+                        );
+                    },
                     success: function(response) {
+                        clearTextarea();
+                        $('#sendMessageForm')[0].reset(); // Reset entire form
+                        $('#file-preview').empty(); // Clear previews
+                        // Clear form fields
                         $('#messageText').val('');
                         $('input[name="chat_images"]').val('');
+
+                        // Clear file preview if exists
+                        if ($('#file-preview').length) {
+                            $('#file-preview').empty();
+                        }
+
+                        // Reset form (important for file inputs)
+                        $('#sendMessageForm')[0].reset();
+
+                        // Hide modal
                         $('#messageModal').modal('hide');
-                        
-                        // Force a full reload to ensure proper ordering
+
+                        // Force reload messages
                         isFirstLoad = true;
                         lastMessageId = 0;
                         fetchMessages();
@@ -566,8 +611,20 @@
                     error: function(xhr) {
                         console.error("Error:", xhr);
                         alert('Error sending message');
+                    },
+                    complete: function() {
+                        $('#sendMessageBtn').prop('disabled', false).html(
+                            '<i class="fas fa-paper-plane me-1"></i> Send');
                     }
                 });
+            });
+
+            // Clear form when modal is hidden
+            $('#messageModal').on('hidden.bs.modal', function() {
+                $('#sendMessageForm')[0].reset();
+                if ($('#file-preview').length) {
+                    $('#file-preview').empty();
+                }
             });
 
             // Close preview when clicking outside image
@@ -576,6 +633,43 @@
                     closeImagePreview();
                 }
             });
+
+            // Function to completely clear the form
+            function clearMessageForm() {
+                $('#sendMessageForm')[0].reset();
+                $('#file-preview').empty();
+
+                // Replace the file input with a fresh one
+                const fileInput = $('#chatImages');
+                const newInput = fileInput.clone();
+                fileInput.replaceWith(newInput);
+
+                // Rebind change event
+                newInput.change(function() {
+                    updateFilePreview(this);
+                });
+            }
+
+            // Clear textarea using multiple methods
+            function clearTextarea() {
+                const $textarea = $('#messageText');
+
+                // Method 1: Standard jQuery
+                $textarea.val('');
+
+                // Method 2: Native JavaScript
+                document.getElementById('messageText').value = '';
+
+                // Method 3: Trigger change event
+                $textarea.trigger('change');
+
+                // Method 4: For stubborn cases
+                setTimeout(() => {
+                    $textarea.val('').trigger('change');
+                }, 50);
+            }
+
+
 
             // Clean up interval when page unloads
             $(window).on('beforeunload', function() {

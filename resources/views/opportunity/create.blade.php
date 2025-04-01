@@ -187,43 +187,32 @@
                             </div>
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
-                                    <label
-                                        class="col-form-label input_color fz16 pt-3">{{ __('lang.estimate_start_project') }}</label>
-                                    <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" name="date"
-                                        type="datetime-local" placeholder="Enter Date" id="datetimeInput"
-                                        min="{{ now()->format('Y-m-d\TH:i') }}" {{-- Server-side min date (today) --}} />
+                                    <label class="col-form-label input_color fz16 pt-3">{{ __('lang.estimate_start_project') }}</label>
+                                    <input class="form-control pl-4 pr-4 input_bg border_radius custom_input" 
+                                           name="date"
+                                           type="text" 
+                                           placeholder="mm-dd-yyyy"
+                                           id="datePicker">
                                 </div>
                             </div>
-
+                            
+                            <!-- Add this before closing body -->
+                            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
                             <script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    const datetimeInput = document.getElementById('datetimeInput');
-                                    const now = new Date();
-
-                                    // Set min to current date/time (client-side)
-                                    const year = now.getFullYear();
-                                    const month = String(now.getMonth() + 1).padStart(2, '0');
-                                    const day = String(now.getDate()).padStart(2, '0');
-                                    const hours = String(now.getHours()).padStart(2, '0');
-                                    const minutes = String(now.getMinutes()).padStart(2, '0');
-
-                                    const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-                                    datetimeInput.min = minDateTime;
-
-                                    // Client-side validation (only needed if browser doesn't enforce min)
-                                    datetimeInput.addEventListener('change', function() {
-                                        const selectedDate = new Date(this.value);
-                                        const today = new Date();
-
-                                        // Allow same day (ignore time comparison)
-                                        if (selectedDate < today && selectedDate.toDateString() !== today.toDateString()) {
-                                            alert('You cannot select a past date.');
-                                            this.value = '';
-                                        }
-                                    });
+                            document.addEventListener('DOMContentLoaded', function() {
+                                flatpickr("#datePicker", {
+                                    dateFormat: "m-d-Y",
+                                    defaultDate: "today",
+                                    minDate: "today",
+                                    allowInput: true,
+                                    clickOpens: true,
+                                    disableMobile: false // Force mobile support
                                 });
+                            });
                             </script>
-                            <div class="col-md-6 col-12">
+                            
+                          
+                             <div class="col-md-6 col-12">
                                 <div class="form-group">
                                     <label
                                         class="col-form-label input_color fz16 pt-3">{{ __('lang.text_best_time_to_reach') }}</label>

@@ -84,6 +84,9 @@ Route::middleware(['auth', 'adminType'])->group(function () {
     Route::get('/delete_contractor/{id}', [HomeController::class, 'delete_contractor'])->name('delete_contractor');
     Route::get('/get_seller_data', [ContractorController::class, 'getAllsellersData'])->name('getAllsellersData');
     Route::get('/get_users', [ContractorController::class, 'get_users'])->name('get_users');
+
+    Route::delete('/user-delete/{id}', [ContractorController::class, 'deleteUser'])->name('delete.user');
+
     Route::get('/admin_approve/{id}', [AuthController::class, 'admin_approve'])->name('admin_approve');
     Route::get('/admin_reject/{id}', [AuthController::class, 'admin_reject'])->name('admin_reject');
     Route::get('/admin_approve_opp/{id}', [OpportunityController::class, 'admin_approve_opp'])->name('admin_approve_opp');

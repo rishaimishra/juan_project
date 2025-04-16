@@ -57,7 +57,7 @@ class OpportunityController extends Controller
         // dd($request->date);
        // Handle date conversion
        if (!empty($request->date)) {
-        $opportunity->est_time = Carbon::parse($request->date)->format('Y-m-d\TH:i');
+        $opportunity->est_time = Carbon::createFromFormat('m-d-Y', $request->date)->format('Y-m-d');
     }
 
         $opportunity->best_time = $request->time;

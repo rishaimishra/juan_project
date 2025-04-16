@@ -28,13 +28,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Include Flatpickr CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-<!-- Include Flatpickr JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Include Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <style>
-        section+div.p-5 { padding: 20px 10px !important; }
+        section+div.p-5 {
+            padding: 20px 10px !important;
+        }
     </style>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -259,11 +261,32 @@
             justify-content: center;
         }
 
+        /* Add this to your styles */
+        .messages-container {
+            -webkit-overflow-scrolling: touch;
+            /* Enable smooth scrolling on iOS */
+            overflow-anchor: none;
+            /* Prevent iOS from trying to be "smart" */
+            padding-bottom: env(safe-area-inset-bottom);
+            /* Account for iPhone bottom bar */
+        }
+
+        /* iOS-specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            .chat-container {
+                height: calc(100vh - env(safe-area-inset-bottom));
+            }
+
+            .message-input {
+                padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            }
+        }
+
         /* Mobile responsiveness */
         @media (max-width: 768px) {
-            .chat-container {
+            /* .chat-container {
                 margin-top: 25px;
-            }
+            } */
 
             .sidebar {
                 display: none;
@@ -389,7 +412,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="chatImages" class="form-label">Attachments</label>
-                            <input class="form-control" type="file" name="chat_images[]" id="chatImages" multiple>
+                            <input class="form-control" type="file" name="chat_images[]" id="chatImages"
+                                multiple>
                             <div class="form-text">jpg, jpeg, png, gif, pdf allowed (max-size: 10mb)</div>
                             <div id="file-preview" class="mt-2"></div> <!-- File preview container -->
                         </div>
@@ -413,6 +437,33 @@
     </div>
 
     <script>
+        // Add at the top of your script
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+        // Enhanced scrollToBottom function
+        function scrollToBottom(force = false) {
+            const container = $("#message-container");
+            if (force || !isUserScrolledUp) {
+                if (isIOS) {
+                    // For iOS, we need multiple attempts to ensure it sticks
+                    setTimeout(() => {
+                        container.scrollTop(container[0].scrollHeight);
+                        setTimeout(() => {
+                            container.scrollTop(container[0].scrollHeight);
+                            setTimeout(() => {
+                                container.scrollTop(container[0].scrollHeight);
+                            }, 100);
+                        }, 100);
+                    }, 100);
+                } else {
+                    container.stop().animate({
+                        scrollTop: container[0].scrollHeight
+                    }, 200);
+                }
+            }
+        }
+
+
         // Global variables to track messages
         let lastMessageId = 0;
         let currentDateSeparator = '';
@@ -512,74 +563,68 @@
 
         // Load messages efficiently
         function fetchMessages() {
-            $.ajax({
-                url: "{{ route('message-opportunity', [$id, $oppId]) }}",
-                type: "GET",
-                data: {
-                    last_message_id: lastMessageId
-                },
-                success: function(response) {
-                    if (response.messages && response.messages.length > 0) {
-                        const messageContainer = $("#message-container");
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: "{{ route('message-opportunity', [$id, $oppId]) }}",
+                    type: "GET",
+                    data: {
+                        last_message_id: lastMessageId
+                    },
+                    success: function(response) {
+                        if (response.messages && response.messages.length > 0) {
+                            const messageContainer = $("#message-container");
+                            checkScrollPosition(messageContainer);
 
-                        // Store scroll position before updates
-                        scrollPosition = messageContainer.scrollTop();
-
-                        // Check if user has scrolled up
-                        checkScrollPosition(messageContainer);
-
-                        // On first load, add all messages
-                        if (isFirstLoad) {
-                            messageContainer.empty();
-                            response.messages.forEach(function(message) {
-                                const messageDate = formatDate(message.created_at);
-                                addDateSeparator(messageDate, messageContainer);
-                                messageContainer.append(createMessageElement(message));
-                                lastMessageId = Math.max(lastMessageId, message.id);
-                            });
-                            isFirstLoad = false;
-                            messageContainer.scrollTop(messageContainer[0].scrollHeight);
-                        }
-                        // On subsequent loads, only add new messages
-                        else {
-                            let newMessages = [];
-                            response.messages.forEach(function(message) {
-                                if (message.id > lastMessageId) {
+                            if (isFirstLoad) {
+                                messageContainer.empty();
+                                response.messages.forEach(function(message) {
                                     const messageDate = formatDate(message.created_at);
                                     addDateSeparator(messageDate, messageContainer);
                                     messageContainer.append(createMessageElement(message));
-                                    newMessages.push(message.id);
+                                    lastMessageId = Math.max(lastMessageId, message.id);
+                                });
+                                isFirstLoad = false;
+
+                                // Special handling for iOS
+                                if (isIOS) {
+                                    setTimeout(() => {
+                                        scrollToBottom(true);
+                                        setTimeout(() => scrollToBottom(true), 300);
+                                    }, 300);
+                                } else {
+                                    scrollToBottom(true);
                                 }
-                            });
+                            } else {
+                                let newMessages = [];
+                                response.messages.forEach(function(message) {
+                                    if (message.id > lastMessageId) {
+                                        const messageDate = formatDate(message.created_at);
+                                        addDateSeparator(messageDate, messageContainer);
+                                        messageContainer.append(createMessageElement(message));
+                                        newMessages.push(message.id);
+                                    }
+                                });
 
-                            // Update last message ID
-                            if (newMessages.length > 0) {
-                                lastMessageId = Math.max(...newMessages);
-
-                                // Only auto-scroll if user hasn't scrolled up
-                                if (!isUserScrolledUp) {
-                                    messageContainer.scrollTop(messageContainer[0].scrollHeight);
+                                if (newMessages.length > 0) {
+                                    lastMessageId = Math.max(...newMessages);
+                                    scrollToBottom();
                                 }
                             }
+                        } else if (isFirstLoad) {
+                            $('#message-container').html(
+                                '<div class="text-center py-3 text-muted">No messages yet</div>');
+                            isFirstLoad = false;
                         }
-                    } else if (isFirstLoad) {
-                        $('#message-container').html(
-                            '<div class="text-center py-3 text-muted">No messages yet</div>');
-                        isFirstLoad = false;
+                        resolve();
+                    },
+                    error: function(xhr) {
+                        console.error("Error loading messages:", xhr);
+                        resolve();
+                    },
+                    complete: function() {
+                        $("#preloader").hide();
                     }
-                },
-                error: function(xhr) {
-                    console.error("Error loading messages:", xhr);
-                    if (isFirstLoad) {
-                        $('#message-container').html(
-                            '<div class="text-center py-3 text-danger">Error loading messages</div>');
-                        isFirstLoad = false;
-                    }
-                },
-                complete: function() {
-                    // Hide the preloader after the AJAX request completes
-                    $("#preloader").hide();
-                }
+                });
             });
         }
 
@@ -601,7 +646,14 @@
         $(document).ready(function() {
             // Initial load
             fetchMessages().then(() => {
-                scrollToBottom();
+                if (isIOS) {
+                    setTimeout(() => {
+                        scrollToBottom(true);
+                        setTimeout(() => scrollToBottom(true), 300);
+                    }, 300);
+                } else {
+                    scrollToBottom(true);
+                }
             });
 
             // Set up scroll event listener
@@ -727,6 +779,7 @@
             });
         });
     </script>
-{{-- @endsection --}}
+    {{-- @endsection --}}
 </body>
+
 </html>

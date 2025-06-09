@@ -268,11 +268,12 @@
 }
 
                                         </style>
-                                        <textarea readonly class="form-control pl-4 pr-4 input_bg border_radius custom_input no-extra-space" 
-          name="description" rows="4" placeholder="Enter Description">{{ $opportunity->detail_description }}</textarea>
-
+                                        {{-- <textarea readonly class="form-control pl-4 pr-4 input_bg border_radius custom_input no-extra-space" 
+          name="description" rows="4" placeholder="Enter Description">{{ $opportunity->detail_description }}</textarea> --}}
+                                      
                                 </div>
                             </div>
+                           
                             {{-- <div class="col-md-6 col-12">
                                 <div class="form-group">
                                     <label
@@ -313,7 +314,11 @@
                                     </select>
                                 </div>
                             </div>
+                            
                             <input type="hidden" id="submit_bit" name="submit_bit" value=""> --}}
+                             <div class="col-md-12 col-12">
+                              <p>{{ $opportunity->detail_description }}</p>
+                            </div>
                             @if (empty($already_exists_invoice->status))
                                 <button type="button" onclick="showSimpleModal('approve')"
                                     class="btn fz20 w-100 mt-4 custom_input line_btn btn-success">{{ __('lang.interested') }}</button>
@@ -325,6 +330,7 @@
                                     class="btn fz20 w-100 mt-4 custom_input line_btn btn-danger">{{ __('lang.text_reject') }}</button> --}}
                             @endif
                         </div>
+                        
                     </div>
                 </form>
             </div>

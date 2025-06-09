@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Log;
 use Spatie\Async\Pool;
 
 
+
 class OpportunityController extends Controller
 {
     public function create()
@@ -55,10 +56,10 @@ class OpportunityController extends Controller
         $opportunity->est_amount = $request->estimated_amount;
         // $opportunity->est_time = $request->date;
         // dd($request->date);
-       // Handle date conversion
-       if (!empty($request->date)) {
-        $opportunity->est_time = Carbon::createFromFormat('m-d-Y', $request->date)->format('Y-m-d');
-    }
+        // Handle date conversion
+        if (!empty($request->date)) {
+            $opportunity->est_time = Carbon::createFromFormat('m-d-Y', $request->date)->format('Y-m-d');
+        }
 
         $opportunity->best_time = $request->time;
         $opportunity->detail_description = $request->description;
@@ -208,7 +209,7 @@ class OpportunityController extends Controller
         $opportunities = DB::table('opportunities')
             ->leftJoin('users', 'opportunities.bidUser_id', '=', 'users.id') // Join with users table based on bidUser_id
             ->leftJoin('provincias', 'opportunities.state', '=', 'provincias.id') // Join with states table
-            ->select('opportunities.*', 'users.mobile_num as phone', 'users.email as user_email','users.name as name')
+            ->select('opportunities.*', 'users.mobile_num as phone', 'users.email as user_email', 'users.name as name')
             ->where('opportunities.admin_bit', '!=', 1) // Only fetch opportunities where admin_bit != 1
             ->orderBy('opportunities.id', 'desc') // Order by opportunity ID descending
             ->get();
@@ -389,15 +390,15 @@ class OpportunityController extends Controller
         // }
 
         // Generate Invoice Number
-       // Get the current year
-    $currentYear = date('Y');
+        // Get the current year
+        $currentYear = date('Y');
 
-    // Get the invoice count for the current year for the user
-    $invoiceCount = Invoice::whereYear('created_at', $currentYear)
-        ->count() + 1; // Increment to get next number
+        // Get the invoice count for the current year for the user
+        $invoiceCount = Invoice::whereYear('created_at', $currentYear)
+            ->count() + 1; // Increment to get next number
 
-    // Generate Invoice Number
-    $invoiceNumber = $invoiceCount . '-' . $currentYear;
+        // Generate Invoice Number
+        $invoiceNumber = $invoiceCount . '-' . $currentYear;
         // Fetch the response from the database
         // $response = Invoice::where('user_id', Auth::user()->id)->value('response');
         $response = Invoice::where('user_id', Auth::user()->id)
@@ -448,14 +449,14 @@ class OpportunityController extends Controller
         // return view('opportunity/invoice', $data);
         $pdf = Pdf::loadView('opportunity/invoice', $data);
 
-            // Define the base invoices directory
+        // Define the base invoices directory
         $baseDirectory = public_path('invoices');
 
 
         // Generate the full file path
-        $fileName ='invoices/' .$invoiceNumber. '.pdf';
+        $fileName = 'invoices/' . $invoiceNumber . '.pdf';
 
-       
+
         $pdf->save(public_path($fileName));
 
         $invoice = new Invoice();
@@ -638,7 +639,7 @@ class OpportunityController extends Controller
     }
     public function send_message_contractor(Request $request)
     {
-        
+
         // return $request;
         $checkOpp = Invoice::where('id', $request->invoice_id)
             ->where('opportunity_id', $request->oppId)
@@ -686,5 +687,25 @@ class OpportunityController extends Controller
         $contractor_id = $con_id;
         $getOpp = OpportunityMessage::where('opportunity_id', $oppId)->where('reciever_id', $con_id)->orderBy('created_at', 'asc')->get();
         return view('invoice.admin_contractor_message', compact('getOpp', 'contractor_id'));
+    }
+
+
+
+
+    public function approveRecentOpportunities($id)
+    {
+        // $threeWeeksAgo = Carbon::now()->subWeeks(3);
+
+        // Fetch all opportunity IDs created in the last 3 weeks and not yet approved
+        // $recentOpportunityIds = Opportunity::
+        //     where('created_at', '>=', $threeWeeksAgo)
+        //     ->pluck('id');
+            // dd($recentOpportunityIds);
+
+        // foreach ($recentOpportunityIds as $id) {
+            $this->admin_approve_opp($id);
+        // }
+
+        return redirect()->back()->with('success', 'Recent opportunities approved successfully.');
     }
 }

@@ -31,12 +31,12 @@
     <noscript><img height="1" width="1" style="display: none" src="https://www.facebook.com/tr?id=1415142252936579&ev=PageView&noscript=1" /></noscript>
     <!-- End Meta Pixel Code -->
 
- <!-- Google Tag Manager -->
+   <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-NWJKZ3XW');</script>
+  })(window,document,'script','dataLayer','GTM-P3T4N86C');</script>
   <!-- End Google Tag Manager -->
 
     <!-- Bootstrap CSS -->
@@ -49,11 +49,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
 
-    <link rel="stylesheet" href="../../contractor-services/assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
   </head>
   <body>
-  <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NWJKZ3XW"
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3T4N86C"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
@@ -61,7 +61,7 @@
     <nav class="navbar navbar-light bg-white static-top">
       <div class="container d-flex justify-content-center">
         <a class="navbar-brand" href="#">
-          <img src="../../contractor-services/assets/img/logo.png" alt="" class="img-fluid" style="height: 80px; width: auto; margin: 0 0 6px" />
+          <img src="./assets/img/logo.png" alt="" class="img-fluid" style="height: 80px; width: auto; margin: 0 0 6px" />
         </a>
       </div>
     </nav>
@@ -203,8 +203,8 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-12">
-            <video controls="" class="img-fluid" poster="../../contractor-services/assets/video/video.png">
-              <source src="../../contractor-services/assets/video/video.mp4" type="video/mp4" />
+            <video controls="" class="img-fluid" poster="./assets/video/video.png">
+              <source src="./assets/video/video.mp4" type="video/mp4" />
               <!-- <source src="mov_bbb.ogg" type="video/ogg" /> -->
               Your browser does not support HTML video.
             </video>
@@ -318,8 +318,8 @@
 
         <div class="row pt-5 justify-content-center">
           <div class="col-lg-7 col-md-10 col-12">
-            {{-- <div class="card p-5"> --}}
-              {{-- <form id="section_form">
+            <div class="card p-5">
+              <form id="section_form">
                 <div class="form-group">
                   <label>Full Name</label>
                   <input id="section_full_name" name="full_name" type="text" class="form-control" placeholder="Full Name..." />
@@ -347,9 +347,8 @@
                 <div class="form-group" style="text-align: center">
                   <button id="body-get-notified-form-confirm" type="button" class="btn btn-primary">Get Notified</button>
                 </div>
-              </form> --}}
-              <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScO3UGHkTzq71t9qU2_pbYbPn4uaTYlWwW39FvEIAmbBaMIoQ/viewform?embedded=true" width="640" height="690" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-            {{-- </div> --}}
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -441,9 +440,9 @@
                 <a class="text-dark" href="https://www.bidinline.com/aboutus/condiciones">Terms of Service</a>
               </li>
               <li class="list-inline-item">&sdot;</li>
-              {{-- <li class="list-inline-item">
+              <li class="list-inline-item">
                 <a class="text-dark" href="https://www.bidinline.com/contacto">Contact Us</a>
-              </li> --}}
+              </li>
             </ul>
             <!-- <p class="text-muted small mb-4 mb-lg-0">&copy; Your Website 2018. All Rights Reserved.</p> -->
           </div>
@@ -464,7 +463,7 @@
           <div class="modal-body">
             <p class="para-1">Ready to find new clients? Fill out the form below and we will contact you soon</p>
 
-            {{-- <form id="modal_form">
+            <form id="modal_form">
               <div class="form-group">
                 <label>Full Name</label>
                 <input id="modal_full_name" name="full_name" type="text" class="form-control" placeholder="Full Name..." />
@@ -492,8 +491,7 @@
               <div class="d-flex form-group justify-content-center mt-4">
                 <button id="modal-form-get-notified" type="button" class="btn btn-primary">Get Notified</button>
               </div>
-            </form> --}}
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScO3UGHkTzq71t9qU2_pbYbPn4uaTYlWwW39FvEIAmbBaMIoQ/viewform?embedded=true" width="640" height="690" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            </form>
           </div>
          
         </div>
@@ -516,6 +514,6 @@
       </div>
     </div>
 
-    <script src="../../contractor-services/assets/js/app.js"></script>
+    <script src="./assets/js/app.js"></script>
   </body>
 </html>

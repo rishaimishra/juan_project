@@ -33,6 +33,9 @@
     <!-- Include Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+    <!-- Pusher JS -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
     <style>
         section+div.p-5 {
             padding: 20px 10px !important;
@@ -417,6 +420,15 @@
     </div>
 
     <script>
+        // Initialize Pusher
+        const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
+            cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+            encrypted: true
+        });
+
+        // Subscribe to the channel
+        const channel = pusher.subscribe('chat-channel-{{ $oppId }}');
+
         // Global variables to track messages
         let lastMessageId = 0;
         let currentDateSeparator = '';
@@ -435,7 +447,6 @@
             const container = $("#message-container");
             if (force || !isUserScrolledUp) {
                 if (isIOS) {
-                    // For iOS, we need multiple attempts to ensure it sticks
                     setTimeout(() => {
                         container.scrollTop(container[0].scrollHeight);
                         setTimeout(() => {
@@ -550,6 +561,7 @@
                         last_message_id: lastMessageId
                     },
                     success: function(response) {
+                        console.log('Messages loaded:', response.messages); // Debug log
                         if (response.messages && response.messages.length > 0) {
                             const messageContainer = $("#message-container");
                             checkScrollPosition(messageContainer);
@@ -563,20 +575,7 @@
                                     lastMessageId = Math.max(lastMessageId, message.id);
                                 });
                                 isFirstLoad = false;
-
-                                // Special handling for initial load on iOS
-                                if (isIOS) {
-                                    setTimeout(() => {
-                                        messageContainer.scrollTop(messageContainer[0]
-                                            .scrollHeight);
-                                        setTimeout(() => {
-                                            messageContainer.scrollTop(messageContainer[
-                                                0].scrollHeight);
-                                        }, 300);
-                                    }, 300);
-                                } else {
-                                    messageContainer.scrollTop(messageContainer[0].scrollHeight);
-                                }
+                                scrollToBottom(true);
                             } else {
                                 let newMessages = [];
                                 response.messages.forEach(function(message) {
@@ -608,6 +607,19 @@
             });
         }
 
+        // Listen for new messages
+        channel.bind('new-message', function(data) {
+            console.log('New message received:', data); // Debug log
+            if (data.message) {
+                const messageContainer = $("#message-container");
+                const messageDate = formatDate(data.message.created_at);
+                addDateSeparator(messageDate, messageContainer);
+                messageContainer.append(createMessageElement(data.message));
+                lastMessageId = Math.max(lastMessageId, data.message.id);
+                scrollToBottom();
+            }
+        });
+
         // Image preview functions
         function openImagePreview(src) {
             const previewModal = document.getElementById('image-preview-modal');
@@ -625,25 +637,14 @@
         // Form submission
         $(document).ready(function() {
             // Initial load
-            // Initial load with auto-scroll
             loadMessages().then(() => {
-                if (isIOS) {
-                    setTimeout(() => {
-                        scrollToBottom(true);
-                        setTimeout(() => scrollToBottom(true), 300);
-                    }, 300);
-                } else {
-                    scrollToBottom(true);
-                }
+                scrollToBottom(true);
             });
 
             // Set up scroll event listener
             $('#message-container').on('scroll', function() {
                 checkScrollPosition($(this));
             });
-
-            // Auto-refresh every 3 seconds
-            const refreshInterval = setInterval(loadMessages, 3000);
 
             // Form submission
             $('#sendMessageForm').on('submit', function(e) {
@@ -660,29 +661,33 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        // 1. Nuclear reset of the entire form
+                        console.log('Message sent successfully:', response);
+                        
+                        // Reset form
                         $form[0].reset();
-
-                        // 2. Explicitly clear textarea (multiple methods)
                         $('#messageText').val('').trigger('change');
-                        document.getElementById('messageText').value = '';
-
-                        // 3. Clear any file previews
                         $('#file-preview').empty();
-
-                        // 4. Force a new FormData instance
                         new FormData($form[0]);
-
-                        // 5. Hide modal
                         $('#messageModal').modal('hide');
-
-                        // 6. Refresh messages
-                        isFirstLoad = true;
-                        lastMessageId = 0;
-                        loadMessages();
+                        
+                        // If we have the message data in the response, add it directly
+                        if (response.data) {
+                            const messageContainer = $("#message-container");
+                            const messageDate = formatDate(response.data.created_at);
+                            addDateSeparator(messageDate, messageContainer);
+                            messageContainer.append(createMessageElement(response.data));
+                            lastMessageId = Math.max(lastMessageId, response.data.id);
+                            scrollToBottom(true);
+                        } else {
+                            // Fallback to reloading messages
+                            isFirstLoad = false;
+                            loadMessages().then(() => {
+                                scrollToBottom(true);
+                            });
+                        }
                     },
                     error: function(xhr) {
-                        console.error("Error:", xhr);
+                        console.error("Error sending message:", xhr);
                         alert('Error sending message');
                     },
                     complete: function() {
@@ -702,25 +707,6 @@
                 if (e.target === this) {
                     closeImagePreview();
                 }
-            });
-
-            function clearTextarea() {
-                $('#messageText').val('');
-                const $textarea = $('#messageText');
-                const $clone = $textarea.clone();
-
-                // Replace with a clean clone
-                $textarea.replaceWith($clone);
-
-                // Rebind any events if needed
-                $clone.on('input', function() {
-                    // Your event handlers here
-                });
-            }
-
-            // Clean up interval when page unloads
-            $(window).on('beforeunload', function() {
-                clearInterval(refreshInterval);
             });
         });
     </script>

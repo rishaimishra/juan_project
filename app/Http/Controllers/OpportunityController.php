@@ -25,6 +25,7 @@ use Pdf;
 use DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Async\Pool;
+use App\Events\NewMessageEvent;
 
 
 
@@ -609,7 +610,6 @@ class OpportunityController extends Controller
 
     public function send_message(Request $request)
     {
-        // return $request;
         $checkOpp = Invoice::where('id', $request->invoice_id)
             ->where('opportunity_id', $request->oppId)
             ->first();
@@ -623,7 +623,7 @@ class OpportunityController extends Controller
                 }
             }
             $images = !empty($imagePaths) ? implode(',', $imagePaths) : null;
-            OpportunityMessage::create([
+            $message = OpportunityMessage::create([
                 'sender_id' => Auth::user()->id,
                 'invoice_id' => $request->invoice_id,
                 'opportunity_id' => $request->oppId,
@@ -633,14 +633,23 @@ class OpportunityController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            $message_send_successfully = Lang::get('lang.message_send_successfully');
-            return redirect()->back()->with('success', $message_send_successfully);
+
+            // Broadcast the new message event
+            event(new NewMessageEvent($message));
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => Lang::get('lang.message_send_successfully'),
+                    'data' => $message
+                ]);
+            }
+
+            return redirect()->back()->with('success', Lang::get('lang.message_send_successfully'));
         }
     }
     public function send_message_contractor(Request $request)
     {
-
-        // return $request;
         $checkOpp = Invoice::where('id', $request->invoice_id)
             ->where('opportunity_id', $request->oppId)
             ->first();
@@ -657,7 +666,7 @@ class OpportunityController extends Controller
                 }
             }
             $images = !empty($imagePaths) ? implode(',', $imagePaths) : null;
-            OpportunityMessage::create([
+            $message = OpportunityMessage::create([
                 'sender_id' => Auth::user()->id,
                 'invoice_id' => $request->invoice_id,
                 'opportunity_id' => $request->oppId,
@@ -667,8 +676,19 @@ class OpportunityController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
-            $message_send_successfully = Lang::get('lang.message_send_successfully');
-            return redirect()->back()->with('success', $message_send_successfully);
+
+            // Broadcast the new message event
+            event(new NewMessageEvent($message));
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => Lang::get('lang.message_send_successfully'),
+                    'data' => $message
+                ]);
+            }
+
+            return redirect()->back()->with('success', Lang::get('lang.message_send_successfully'));
         }
     }
 

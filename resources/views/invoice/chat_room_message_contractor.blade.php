@@ -349,6 +349,9 @@
                             <small class="text-muted">{{ __('lang.text_opportunity_name') }}</small>
                         </div>
                     </div>
+                    <button class="btn btn-light ms-auto" onclick="refreshChat()" title="Refresh Chat">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
 
                 <!-- Messages container -->
@@ -709,6 +712,18 @@
                 }
             });
         });
+
+        // Add refresh function
+        function refreshChat() {
+            $('#blurLoader').show();
+            isFirstLoad = true;
+            lastMessageId = 0;
+            currentDateSeparator = '';
+            loadMessages().then(() => {
+                scrollToBottom(true);
+                $('#blurLoader').hide();
+            });
+        }
     </script>
     {{-- @endsection --}}
 </body>
